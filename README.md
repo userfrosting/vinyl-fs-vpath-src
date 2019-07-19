@@ -58,6 +58,12 @@ $ gulp bundle
   + c.js (from src/layer-2)
 ```
 
+## Why no `dest`?
+
+This package was originally created to address a pain point that adding support for `dest` would inherit, backpressure and memory pressure. Backpressure occurs in a stream when a single part of the pipeline collects chunks but emits little to nothing for later pipeline parts, thus reducing effiency overall. The override logic with virtual paths needs to hold onto most of the files to decide what files should be discarded, which means memory requirements will steadily increase proportionally with the number of files in the pipeline. Some optimisations can be made, however they have little impact in most cases.
+
+Much of the source does already exist in `@userfrosting/gulp-bundle-assets@^3`, so its introduction wouldn't be tremendously difficult. If it is something you might find useful just ask.
+
 ## API
 
 Generation of API documentation is not yet implemented however the API surface is fully documented interally. Use VS Code or look at the source on GitHub in the meantime.
