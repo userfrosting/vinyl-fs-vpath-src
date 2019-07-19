@@ -1,9 +1,9 @@
-# [vinyl](https://github.com/gulpjs/vinyl)-fs-vpath
+# @userfrosting/[vinyl](https://github.com/gulpjs/vinyl)-fs-vpath
 
 | Branch | Status |
 | ------ | ------ |
-| master | [![Build Status](https://travis-ci.org/userfrosting/vinyl-fs-vpaths-src.svg?branch=master)](https://travis-ci.org/userfrosting/vinyl-fs-vpaths) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpaths/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpaths/branch/master) |
-| develop | [![Build Status](https://travis-ci.org/userfrosting/vinyl-fs-vpaths.svg?branch=develop)](https://travis-ci.org/userfrosting/vinyl-fs-vpaths) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpaths/branch/develop/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpaths/branch/develop) |
+| master | [![Build Status](https://travis-ci.org/userfrosting/vinyl-fs-vpath-src.svg?branch=master)](https://travis-ci.org/userfrosting/vinyl-fs-vpath) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/master) |
+| develop | [![Build Status](https://travis-ci.org/userfrosting/vinyl-fs-vpath.svg?branch=develop)](https://travis-ci.org/userfrosting/vinyl-fs-vpath) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/develop/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/develop) |
 
 Vinyl source for file system with support for virtual paths. Uses [globby](https://www.npmjs.com/package/globby) for file discovery.
 
@@ -31,7 +31,7 @@ export function bundle() {
             ]
         )
         .pipe(concatJs("main.js"))
-        .pipe(uglify())
+        .pipe(terser())
         .pipe(dest("public/assets/"));
 }
 ```
