@@ -1,3 +1,11 @@
+// AVA TS patch
+declare global {
+    export interface SymbolConstructor {
+        readonly observable: symbol;
+    }
+}
+
+
 import test, { LogFn } from "ava";
 import resolver from "./resolver";
 import { resolve as resolvePath } from "path";
