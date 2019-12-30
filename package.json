@@ -23,6 +23,7 @@
         "vinyl",
         "vinyl-adapter",
         "gulp",
+        "gulpplugin",
         "file",
         "file system",
         "fs",
