@@ -2,8 +2,8 @@
 
 | Branch | Status |
 | ------ | ------ |
-| master | [![Continuous Integration](https://github.com/userfrosting/vinyl-fs-vpath/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/userfrosting/vinyl-fs-vpath/actions) [![Build Status](https://travis-ci.org/userfrosting/vinyl-fs-vpath.svg?branch=master)](https://travis-ci.org/userfrosting/vinyl-fs-vpath) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/master) |
-| develop | [![Continuous Integration](https://github.com/userfrosting/vinyl-fs-vpath/workflows/Continuous%20Integration/badge.svg?branch=develop)](https://github.com/userfrosting/vinyl-fs-vpath/actions) [![Build Status](https://travis-ci.org/userfrosting/vinyl-fs-vpath.svg?branch=develop)](https://travis-ci.org/userfrosting/vinyl-fs-vpath) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/develop/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/develop) |
+| master | [![Continuous Integration](https://github.com/userfrosting/vinyl-fs-vpath/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/userfrosting/vinyl-fs-vpath/actions) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/master) |
+| develop | [![Continuous Integration](https://github.com/userfrosting/vinyl-fs-vpath/workflows/Continuous%20Integration/badge.svg?branch=develop)](https://github.com/userfrosting/vinyl-fs-vpath/actions) [![codecov](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/develop/graph/badge.svg)](https://codecov.io/gh/userfrosting/vinyl-fs-vpath/branch/develop) |
 
 Vinyl source for file system with support for virtual paths. Uses [globby](https://www.npmjs.com/package/globby) for file discovery.
 
