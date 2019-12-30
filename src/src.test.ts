@@ -1,3 +1,10 @@
+// AVA TS patch
+declare global {
+    export interface SymbolConstructor {
+        readonly observable: symbol;
+    }
+}
+
 import test, { LogFn } from "ava";
 import { src } from "./src";
 import { Logger } from "ts-log";
