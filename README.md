@@ -66,7 +66,8 @@ Much of the source does already exist in `@userfrosting/gulp-bundle-assets@^3`, 
 
 ## API
 
-Generation of API documentation is not yet implemented however the API surface is fully documented interally. Use VS Code or look at the source on GitHub in the meantime.
+API documentation is regenerated for every release using [API Extractor](https://www.npmjs.com/package/@microsoft/api-extractor) and [API Documenter](https://www.npmjs.com/package/@microsoft/api-documenter).
+The results reside in [docs/api](./docs/api/index.md).
 
 ## Release process
 

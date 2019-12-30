@@ -5,7 +5,6 @@ declare global {
     }
 }
 
-
 import test, { LogFn } from "ava";
 import resolver from "./resolver";
 import { resolve as resolvePath } from "path";
