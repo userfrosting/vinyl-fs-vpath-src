@@ -19,5 +19,7 @@ jobs:
           with:
             version: ${{ matrix.node-version }}
         - run: npm ci
-        - run: npm test
-        #- run: ./node_modules/.bin/codecov
+        - run: ./node_modules/.bin/nyc --reporter=lcovonly npm test
+        - uses: codecov/codecov-action@v1
+          with:
+            token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}

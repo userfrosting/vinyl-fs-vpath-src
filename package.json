@@ -9,7 +9,7 @@
     "types": "./dist/main.d.ts",
     "scripts": {
         "pretest": "tsc",
-        "test": "is-ci && nyc --reporter=lcov --reporter=text ava || nyc ava",
+        "test": "nyc --reporter=text ava",
         "prepublishOnly": "tsc",
         "preversion": "npm test",
         "version": "npm run version:apiDocRefresh && npm run version:changelogBump",
@@ -50,9 +50,7 @@
         "@types/vinyl": "^2.0.4",
         "ava": "^2.4.0",
         "changelog-updater": "^1.1.0",
-        "codecov": "^3.6.1",
         "get-stream": "^5.1.0",
-        "is-ci": "^2.0.0",
         "nyc": "^15.0.0",
         "typescript": "^3.7.4"
     },
@@ -68,8 +66,5 @@
             "esm"
         ],
         "babel": false
-    },
-    "nyc": {
-        "excludeAfterRemap": false
     }
 }
