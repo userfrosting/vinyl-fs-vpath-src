@@ -1,7 +1,7 @@
 name: Continuous Integration
 on:
     # Every push
-    push
+    push:
     schedule:
         # Every Monday and Thursday at 12PM UTC
         - cron: '0 12 * * 1,4'
