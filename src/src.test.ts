@@ -1,30 +1,22 @@
-// AVA TS patch
-declare global {
-    export interface SymbolConstructor {
-        readonly observable: symbol;
-    }
-}
-
-import test, { LogFn } from "ava";
+import test from "ava";
 import { src } from "./src";
-import { Logger } from "ts-log";
 import getStream from "get-stream";
-
-function buildLogger(log: LogFn): Logger {
-    return { debug: log, trace: log, info: log, error: log, warn: log };
-}
 
 test("Throws if no files resolved", async t => {
     await t.throwsAsync(
         async () => await getStream.array(src("./test-data/scripts-0/**/*")),
-        null,
-        "No files found",
+        {
+            instanceOf: Error,
+            message: "No files found"
+        }
     );
 
     await t.throwsAsync(
         async () => await getStream.array(src("./test-data/scripts-1/0.js")),
-        null,
-        "No files found",
+        {
+            instanceOf: Error,
+            message: "No files found"
+        }
     );
 });
 
