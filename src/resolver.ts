@@ -2,8 +2,25 @@ import { Logger } from "ts-log";
 import { resolve as resolvePath } from "path";
 import globby from "globby";
 
+export interface IVirtualPathMapping {
+    /**
+     * Path prefix to match (relative to cwd).
+     */
+    match: string;
+
+    /**
+     * Value to replace matched portion of path with.
+     */
+    replace: string;
+}
+
+export interface IMappedPath {
+    actual: string;
+    virtual: string;
+}
+
 interface IResolverOptions {
-    vPathMap: [string, string][];
+    vPathMap: IVirtualPathMapping[];
     logger: Logger;
 }
 
@@ -15,7 +32,7 @@ interface IResolverOptions {
  *
  * @returns Map of virtual paths to actual paths, all fully resolved to absolute paths.
  */
-export default function (globs: string[], options: IResolverOptions): [ string, string ][] {
+export default function (globs: string[], options: IResolverOptions): IMappedPath[] {
     const log = options.logger;
 
     // Resolve all file paths
@@ -63,10 +80,10 @@ export default function (globs: string[], options: IResolverOptions): [ string, 
 
     // Simplify outputs
 
-    const resolvedPaths: [ string, string ][] = [];
+    const resolvedPaths: IMappedPath[] = [];
 
     for (const [ vPath, [ path ] ] of candidatePaths.entries()) {
-        resolvedPaths.push([ resolvePath(vPath), resolvePath(path) ]);
+        resolvedPaths.push({ virtual: resolvePath(vPath), actual: resolvePath(path) });
     }
 
     return resolvedPaths;
@@ -75,21 +92,21 @@ export default function (globs: string[], options: IResolverOptions): [ string, 
 /**
  * Attempts to resolve path to a virtual path, returning provided path on failure.
  *
- * @param path Absolute path to try and resolve.
- * @param vPaths Virtual path mappings.
- * @param log Logger
+ * @param path - Absolute path to try and resolve.
+ * @param vPaths - Virtual path mappings.
+ * @param log - Logger
  *
  * @returns New or existing path and preference.
  */
-function resolveVirtualPath(path: string, vPaths: [string, string][], log: Logger): [string, number] {
+function resolveVirtualPath(path: string, vPaths: IVirtualPathMapping[], log: Logger): [string, number] {
     // Try to resolve a virtual path
     log.trace("Attempting to resolve virtual path", { path });
 
     let preference = 0;
-    for (const [ oldPathStart, newPathStart ] of vPaths) {
-        if (path.startsWith(oldPathStart)) {
+    for (const { match, replace } of vPaths) {
+        if (path.startsWith(match)) {
             // Virtual path match discovered
-            const resolvedPath = resolvePath(path.replace(oldPathStart, newPathStart));
+            const resolvedPath = resolvePath(path.replace(match, replace));
             log.trace("Resolved virtual path", { path, resolvedPath, preference });
             return [ resolvedPath, preference ];
         }

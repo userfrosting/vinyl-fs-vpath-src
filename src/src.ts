@@ -1,23 +1,25 @@
 import { Readable } from "stream";
-import resolver from "./resolver";
+import resolver, { IVirtualPathMapping, IMappedPath } from "./resolver.js";
 import { dummyLogger } from "ts-log";
 import Vinyl from "vinyl";
 import { readFileSync } from "fs";
 
 class VinylFsVPathSrc extends Readable {
 
-    private readonly files: [ string, string ][];
+    /**
+     * Resolved file path and its virtual path.
+     */
+    private readonly files: IMappedPath[];
 
     /**
-     *
-     * @param inputs
-     * @param virtualPathMappings
+     * @param blogs - Input file matchers.
+     * @param vPathMap - Virtual path mappings.
      */
-    constructor(globs: string|string[], vPathMap?: [string, string][]) {
+    constructor(globs: string|string[], vPathMap: IVirtualPathMapping[]) {
         super({ objectMode: true });
 
         globs = Array.isArray(globs) ? globs : [ globs ];
-        this.files = resolver(globs, { vPathMap: vPathMap || [], logger: dummyLogger });
+        this.files = resolver(globs, { vPathMap, logger: dummyLogger });
 
         // Ensure we have at least 1 file to read
         if (this.files.length < 1) {
@@ -29,17 +31,17 @@ class VinylFsVPathSrc extends Readable {
         if (this.files.length > 0) {
             // Send through next file
 
-            const [ vPath, realPath ] = this.files.pop();
+            const { actual, virtual } = this.files.pop();
 
             const history: string[] = [];
-            if (vPath !== realPath) {
-                history.push(realPath);
+            if (virtual !== actual) {
+                history.push(actual);
             }
 
             this.push(new Vinyl({
                 history,
-                path: vPath,
-                contents: readFileSync(realPath),
+                path: virtual,
+                contents: readFileSync(actual),
             }));
         }
         else {
@@ -56,6 +58,6 @@ class VinylFsVPathSrc extends Readable {
  *
  * @public
  */
-export function src(globs: string|string[], vPathMap?: [string, string][]): Readable {
+export function src(globs: string|string[], vPathMap: IVirtualPathMapping[]): Readable {
     return new VinylFsVPathSrc(globs, vPathMap);
 }

@@ -17,11 +17,11 @@ test("Returns all glob matched paths when no vpaths provided", t => {
     t.deepEqual(
         resolver([ "./test-data/**/*.js" ], { vPathMap: [], logger: buildLogger(t.log) }),
         [
-            [ file1, file1 ],
-            [ file2, file2 ],
-            [ file3, file3 ],
-            [ file4, file4 ],
-            [ file5, file5 ],
+            { virtual: file1, actual: file1 },
+            { virtual: file2, actual: file2 },
+            { virtual: file3, actual: file3 },
+            { virtual: file4, actual: file4 },
+            { virtual: file5, actual: file5 },
         ]
     );
 });
@@ -32,17 +32,17 @@ test("Overrides when vpaths intersect", t => {
             [ "./test-data/**/*.js" ],
             {
                 vPathMap: [
-                    [ "./test-data/scripts-3/", "./test-data/scripts/" ],
-                    [ "./test-data/scripts-1/", "./test-data/scripts/" ],
-                    [ "./test-data/scripts-2/", "./test-data/scripts/" ],
+                    { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
+                    { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
+                    { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
                 ],
                 logger: buildLogger(t.log)
             }
         ),
         [
-            [ resolvePath("./test-data/scripts/a.js"), resolvePath("./test-data/scripts-2/a.js") ],
-            [ resolvePath("./test-data/scripts/b.js"), resolvePath("./test-data/scripts-1/b.js") ],
-            [ resolvePath("./test-data/scripts/c.js"), resolvePath("./test-data/scripts-2/c.js") ],
+            { virtual: resolvePath("./test-data/scripts/a.js"), actual: resolvePath("./test-data/scripts-2/a.js") },
+            { virtual: resolvePath("./test-data/scripts/b.js"), actual: resolvePath("./test-data/scripts-1/b.js") },
+            { virtual: resolvePath("./test-data/scripts/c.js"), actual: resolvePath("./test-data/scripts-2/c.js") },
         ]
     );
 });
