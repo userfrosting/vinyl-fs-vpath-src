@@ -4,7 +4,10 @@ import { dummyLogger, Logger } from "ts-log";
 import Vinyl from "vinyl";
 import { readFileSync } from "fs";
 
-interface IConfig {
+/**
+ * @public
+ */
+export interface IConfig {
     /**
      * Input file matchers.
      */

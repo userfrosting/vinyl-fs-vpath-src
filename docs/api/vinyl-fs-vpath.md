@@ -8,5 +8,12 @@
 
 |  Function | Description |
 |  --- | --- |
-|  [src(globs, vPathMap)](./vinyl-fs-vpath.src.md) | Vinyl source which supports virtual paths with overrides on collision. |
+|  [src(config)](./vinyl-fs-vpath.src.md) | Vinyl source that maps input files with virtual paths. Files are overriden on collision. |
+
+## Interfaces
+
+|  Interface | Description |
+|  --- | --- |
+|  [IConfig](./vinyl-fs-vpath.iconfig.md) |  |
+|  [IVirtualPathMapping](./vinyl-fs-vpath.ivirtualpathmapping.md) |  |
 

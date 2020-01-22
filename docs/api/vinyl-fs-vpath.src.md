@@ -4,20 +4,19 @@
 
 ## src() function
 
-Vinyl source which supports virtual paths with overrides on collision.
+Vinyl source that maps input files with virtual paths. Files are overriden on collision.
 
 <b>Signature:</b>
 
 ```typescript
-export declare function src(globs: string | string[], vPathMap?: [string, string][]): Readable;
+export declare function src(config: IConfig): Readable;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  globs | <code>string &#124; string[]</code> | Globs to discover files with. |
-|  vPathMap | <code>[string, string][]</code> | Optional virtual path mappings to apply to discovered files. Collision resolution uses the last mapping to select the file. |
+|  config | <code>IConfig</code> | Source configuration. |
 
 <b>Returns:</b>
 

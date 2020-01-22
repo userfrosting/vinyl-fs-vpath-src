@@ -2,6 +2,9 @@ import { Logger } from "ts-log";
 import { resolve as resolvePath } from "path";
 import globby from "globby";
 
+/**
+ * @public
+ */
 export interface IVirtualPathMapping {
     /**
      * Path prefix to match (relative to cwd).
