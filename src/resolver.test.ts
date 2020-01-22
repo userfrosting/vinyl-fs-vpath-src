@@ -1,11 +1,7 @@
 import test, { LogFn } from "ava";
 import resolver from "./resolver";
 import { resolve as resolvePath } from "path";
-import { Logger } from "ts-log";
-
-function buildLogger(log: LogFn): Logger {
-    return { debug: log, trace: log, info: log, error: log, warn: log };
-}
+import { dummyLogger } from "ts-log";
 
 test("Returns all glob matched paths when no vpaths provided", t => {
     const file1 = resolvePath("./test-data/scripts-1/a.js");
@@ -15,7 +11,7 @@ test("Returns all glob matched paths when no vpaths provided", t => {
     const file5 = resolvePath("./test-data/scripts-3/b.js");
 
     t.deepEqual(
-        resolver([ "./test-data/**/*.js" ], { vPathMap: [], logger: buildLogger(t.log) }),
+        resolver([ "./test-data/**/*.js" ], { vPathMap: [], logger: dummyLogger }),
         [
             { virtual: file1, actual: file1 },
             { virtual: file2, actual: file2 },
@@ -36,7 +32,7 @@ test("Overrides when vpaths intersect", t => {
                     { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
                     { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
                 ],
-                logger: buildLogger(t.log)
+                logger: dummyLogger
             }
         ),
         [

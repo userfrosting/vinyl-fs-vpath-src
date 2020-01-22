@@ -14,8 +14,18 @@ export interface IVirtualPathMapping {
     replace: string;
 }
 
+/**
+ * A file path mapping.
+ */
 export interface IMappedPath {
+    /**
+     * File's true path.
+     */
     actual: string;
+
+    /**
+     * File's virtual path.
+     */
     virtual: string;
 }
 
