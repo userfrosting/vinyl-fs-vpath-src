@@ -8,6 +8,7 @@ test("Throws if no files resolved", async t => {
         async () => await getStream.array(src({
             globs: "./test-data/scripts-0/**/*",
             virtPathMaps: [],
+            cwd: process.cwd(),
             logger: dummyLogger,
         })),
         {

@@ -11,7 +11,10 @@ test("Returns all glob matched paths when no vpaths provided", t => {
     const file5 = resolvePath("./test-data/scripts-3/b.js");
 
     t.deepEqual(
-        resolver([ "./test-data/**/*.js" ], { vPathMap: [], logger: dummyLogger }),
+        resolver(
+            [ "./test-data/**/*.js" ],
+            { virtPathMaps: [], cwd: process.cwd(), logger: dummyLogger }
+        ),
         [
             { virtual: file1, actual: file1 },
             { virtual: file2, actual: file2 },
@@ -27,11 +30,12 @@ test("Overrides when vpaths intersect", t => {
         resolver(
             [ "./test-data/**/*.js" ],
             {
-                vPathMap: [
+                virtPathMaps: [
                     { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
                     { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
                     { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
                 ],
+                cwd: process.cwd(),
                 logger: dummyLogger
             }
         ),

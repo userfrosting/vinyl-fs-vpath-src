@@ -18,6 +18,12 @@ interface IConfig {
     virtPathMaps: IVirtualPathMapping[];
 
     /**
+     * Current working directory.
+     * NodeJS cwd is used if not supplied.
+     */
+    cwd?: string;
+
+    /**
      * Optional logger.
      */
     logger?: Logger;
@@ -40,11 +46,12 @@ class VinylFsVPathSrc extends Readable {
 
         const globs = Array.isArray(config.globs) ? config.globs : [ config.globs ];
         const virtPathMaps = config.virtPathMaps;
+        const cwd = config.cwd ?? process.cwd();
         this.logger = config.logger ?? dummyLogger;
 
         this.files = resolver(
             globs,
-            { vPathMap: virtPathMaps, logger: this.logger }
+            { virtPathMaps, cwd, logger: this.logger }
         );
 
         // Ensure we have at least 1 file to read
