@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Customisation of used current working directory.
+- Support for logging integration.
+
+### Changed
+- Virtual path mapping input must now be an array of objects, and its required.
+
 ## [0.1.1] - 2019-12-30
 
 Maintenance release.

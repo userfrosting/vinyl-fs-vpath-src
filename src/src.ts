@@ -1,26 +1,62 @@
 import { Readable } from "stream";
-import resolver from "./resolver";
-import { dummyLogger } from "ts-log";
+import resolver, { IVirtualPathMapping, IMappedPath } from "./resolver.js";
+import { dummyLogger, Logger } from "ts-log";
 import Vinyl from "vinyl";
 import { readFileSync } from "fs";
 
-class VinylFsVPathSrc extends Readable {
-
-    private readonly files: [ string, string ][];
+interface IConfig {
+    /**
+     * Input file matchers.
+     */
+    globs: string|string[];
 
     /**
-     *
-     * @param inputs
-     * @param virtualPathMappings
+     * Virtual path mappings.
+     * Collision resolution uses the last mapping to select the file.
+     * Resolution is *not* recursive.
      */
-    constructor(globs: string|string[], vPathMap?: [string, string][]) {
+    virtPathMaps: IVirtualPathMapping[];
+
+    /**
+     * Current working directory.
+     * NodeJS cwd is used if not supplied.
+     */
+    cwd?: string;
+
+    /**
+     * Optional logger.
+     */
+    logger?: Logger;
+}
+
+class VinylFsVPathSrc extends Readable {
+
+    /**
+     * Resolved file path and its virtual path.
+     */
+    private readonly files: IMappedPath[];
+
+    private readonly logger: Logger;
+
+    /**
+     * @param config - Source configuration.
+     */
+    constructor(config: IConfig) {
         super({ objectMode: true });
 
-        globs = Array.isArray(globs) ? globs : [ globs ];
-        this.files = resolver(globs, { vPathMap: vPathMap || [], logger: dummyLogger });
+        const globs = Array.isArray(config.globs) ? config.globs : [ config.globs ];
+        const virtPathMaps = config.virtPathMaps;
+        const cwd = config.cwd ?? process.cwd();
+        this.logger = config.logger ?? dummyLogger;
+
+        this.files = resolver(
+            globs,
+            { virtPathMaps, cwd, logger: this.logger }
+        );
 
         // Ensure we have at least 1 file to read
         if (this.files.length < 1) {
+            this.logger.error("No files found", { globs, virtPathMaps });
             throw new Error("No files found");
         }
     }
@@ -29,33 +65,35 @@ class VinylFsVPathSrc extends Readable {
         if (this.files.length > 0) {
             // Send through next file
 
-            const [ vPath, realPath ] = this.files.pop();
+            const { actual, virtual } = this.files.pop();
+            this.logger.trace("Pushing file", { actual, virtual });
 
             const history: string[] = [];
-            if (vPath !== realPath) {
-                history.push(realPath);
+            if (virtual !== actual) {
+                history.push(actual);
             }
 
             this.push(new Vinyl({
                 history,
-                path: vPath,
-                contents: readFileSync(realPath),
+                path: virtual,
+                contents: readFileSync(actual),
             }));
+            this.logger.trace("Pushed file", { actual, virtual });
         }
         else {
+            this.logger.trace("No more files to send, ending stream");
             this.push(null);
         }
     }
 }
 
 /**
- * Vinyl source which supports virtual paths with overrides on collision.
- * @param globs - Globs to discover files with.
- * @param vPathMap - Optional virtual path mappings to apply to discovered files.
- * Collision resolution uses the last mapping to select the file.
+ * Vinyl source that maps input files with virtual paths.
+ * Files are overriden on collision.
+ * @param config - Source configuration.
  *
  * @public
  */
-export function src(globs: string|string[], vPathMap?: [string, string][]): Readable {
-    return new VinylFsVPathSrc(globs, vPathMap);
+export function src(config: IConfig): Readable {
+    return new VinylFsVPathSrc(config);
 }

@@ -1,57 +1,65 @@
-// AVA TS patch
-declare global {
-    export interface SymbolConstructor {
-        readonly observable: symbol;
-    }
-}
-
-import test, { LogFn } from "ava";
+import test from "ava";
 import { src } from "./src";
-import { Logger } from "ts-log";
 import getStream from "get-stream";
-
-function buildLogger(log: LogFn): Logger {
-    return { debug: log, trace: log, info: log, error: log, warn: log };
-}
+import { dummyLogger } from "ts-log";
 
 test("Throws if no files resolved", async t => {
     await t.throwsAsync(
-        async () => await getStream.array(src("./test-data/scripts-0/**/*")),
-        null,
-        "No files found",
+        async () => await getStream.array(src({
+            globs: "./test-data/scripts-0/**/*",
+            virtPathMaps: [],
+            cwd: process.cwd(),
+            logger: dummyLogger,
+        })),
+        {
+            instanceOf: Error,
+            message: "No files found"
+        }
     );
 
     await t.throwsAsync(
-        async () => await getStream.array(src("./test-data/scripts-1/0.js")),
-        null,
-        "No files found",
+        async () => await getStream.array(src({
+            globs: "./test-data/scripts-1/0.js",
+            virtPathMaps: [],
+        })),
+        {
+            instanceOf: Error,
+            message: "No files found"
+        }
     );
 });
 
 test("Pushes expected files into stream", async t => {
-    const data = await getStream.array(src("./test-data/**/*.js"));
+    const data = await getStream.array(src({
+        globs: "./test-data/**/*.js",
+        virtPathMaps: [],
+    }));
 
     t.is(data.length, 5);
 });
 
 test("Pushes expected files into stream with vPaths and simple glob", async t => {
-    const data = await getStream.array(src("./test-data/**/*.js", [
-        [ "./test-data/scripts-3/", "./test-data/scripts/" ],
-        [ "./test-data/scripts-1/", "./test-data/scripts/" ],
-        [ "./test-data/scripts-2/", "./test-data/scripts/" ],
-    ]));
+    const data = await getStream.array(src({
+        globs: "./test-data/**/*.js",
+        virtPathMaps: [
+            { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
+            { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
+            { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
+        ]
+    }));
 
     t.is(data.length, 3);
 });
 
 test("Pushes expected files into stream with vPaths and complex glob", async t => {
-    const data = await getStream.array(src([ "./test-data/**/*.js" ], [
-        [ "./test-data/scripts-3/", "./test-data/scripts/" ],
-        [ "./test-data/scripts-1/", "./test-data/scripts/" ],
-        [ "./test-data/scripts-2/", "./test-data/scripts/" ],
-    ]));
-
-    //t.log(data);
+    const data = await getStream.array(src({
+        globs: [ "./test-data/**/*.js" ],
+        virtPathMaps: [
+            { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
+            { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
+            { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
+        ]
+    }));
 
     t.is(data.length, 3);
 });

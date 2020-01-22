@@ -1,19 +1,7 @@
-// AVA TS patch
-declare global {
-    export interface SymbolConstructor {
-        readonly observable: symbol;
-    }
-}
-
-
 import test, { LogFn } from "ava";
 import resolver from "./resolver";
 import { resolve as resolvePath } from "path";
-import { Logger } from "ts-log";
-
-function buildLogger(log: LogFn): Logger {
-    return { debug: log, trace: log, info: log, error: log, warn: log };
-}
+import { dummyLogger } from "ts-log";
 
 test("Returns all glob matched paths when no vpaths provided", t => {
     const file1 = resolvePath("./test-data/scripts-1/a.js");
@@ -23,13 +11,16 @@ test("Returns all glob matched paths when no vpaths provided", t => {
     const file5 = resolvePath("./test-data/scripts-3/b.js");
 
     t.deepEqual(
-        resolver([ "./test-data/**/*.js" ], { vPathMap: [], logger: buildLogger(t.log) }),
+        resolver(
+            [ "./test-data/**/*.js" ],
+            { virtPathMaps: [], cwd: process.cwd(), logger: dummyLogger }
+        ),
         [
-            [ file1, file1 ],
-            [ file2, file2 ],
-            [ file3, file3 ],
-            [ file4, file4 ],
-            [ file5, file5 ],
+            { virtual: file1, actual: file1 },
+            { virtual: file2, actual: file2 },
+            { virtual: file3, actual: file3 },
+            { virtual: file4, actual: file4 },
+            { virtual: file5, actual: file5 },
         ]
     );
 });
@@ -39,18 +30,19 @@ test("Overrides when vpaths intersect", t => {
         resolver(
             [ "./test-data/**/*.js" ],
             {
-                vPathMap: [
-                    [ "./test-data/scripts-3/", "./test-data/scripts/" ],
-                    [ "./test-data/scripts-1/", "./test-data/scripts/" ],
-                    [ "./test-data/scripts-2/", "./test-data/scripts/" ],
+                virtPathMaps: [
+                    { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
+                    { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
+                    { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
                 ],
-                logger: buildLogger(t.log)
+                cwd: process.cwd(),
+                logger: dummyLogger
             }
         ),
         [
-            [ resolvePath("./test-data/scripts/a.js"), resolvePath("./test-data/scripts-2/a.js") ],
-            [ resolvePath("./test-data/scripts/b.js"), resolvePath("./test-data/scripts-1/b.js") ],
-            [ resolvePath("./test-data/scripts/c.js"), resolvePath("./test-data/scripts-2/c.js") ],
+            { virtual: resolvePath("./test-data/scripts/a.js"), actual: resolvePath("./test-data/scripts-2/a.js") },
+            { virtual: resolvePath("./test-data/scripts/b.js"), actual: resolvePath("./test-data/scripts-1/b.js") },
+            { virtual: resolvePath("./test-data/scripts/c.js"), actual: resolvePath("./test-data/scripts-2/c.js") },
         ]
     );
 });
