@@ -1,6 +1,6 @@
 import { Logger } from "ts-log";
-import { resolve as resolvePath } from "path";
 import globby from "globby";
+import { resolve as resolvePath } from "path";
 
 /**
  * @public
@@ -60,30 +60,31 @@ interface IResolverOptions {
 export default function (globs: string[], options: IResolverOptions): IMappedPath[] {
     const log = options.logger;
     const cwd = options.cwd;
+    const virtPathMaps = options.virtPathMaps;
+
+    // Make mappings absolute
+    for (const virtPathMap of virtPathMaps) {
+        virtPathMap.match = resolvePath(virtPathMap.match);
+        virtPathMap.replace = resolvePath(virtPathMap.replace);
+    }
 
     // Resolve all file paths
 
-    log.trace("Looking for files", { globs: globs });
+    log.trace("Looking for files", { globs });
 
-    const paths = new Set<string>(globby.sync(globs, { cwd }));
+    const paths = globby.sync(globs, { cwd, onlyFiles: true, unique: true })
+        .map(path => resolvePath(cwd, path));
 
-    log.trace(`Found ${paths.size} files, filtering with provided virtual paths`);
+    log.trace(`Found ${paths.length} files, filtering with provided virtual paths`);
 
-    /**
-     * Used to track files resolved as per virtual paths.
-     *
-     * Key is virtual path.
-     * Value tuple is;
-     * - 1 is the real path
-     * - 2 is the file perference
-     */
+    // Used to track files resolved as per virtual paths. Key is virtual path.
     const candidatePaths = new Map<string, { actual: string, preference: number}>();
 
     for (const actual of paths) {
-        log.trace("Inspecting file path", { path: actual });
+        log.trace("Inspecting file path", { actual });
 
         // Resolve path
-        const [ virtual, preference ] = resolveVirtualPath(actual, options.virtPathMaps, cwd, log);
+        const [ virtual, preference ] = resolveVirtualPath(actual, options.virtPathMaps, log);
 
         // Add to resolved file if highest preference
         const existingFile = candidatePaths.get(virtual);
@@ -102,14 +103,14 @@ export default function (globs: string[], options: IResolverOptions): IMappedPat
         }
     }
 
-    log.trace("Path filtering complete, cleaning up results to return", { paths: candidatePaths.size });
+    log.trace("Path filtering complete, cleaning up results to return", { canidatePaths: candidatePaths.size });
 
-    // Simplify outputs
+    // Clean outputs
 
     const resolvedPaths: IMappedPath[] = [];
 
     for (const [ virtual, { actual } ] of candidatePaths.entries()) {
-        resolvedPaths.push({ virtual, actual: resolvePath(cwd, actual) });
+        resolvedPaths.push({ virtual, actual });
     }
 
     return resolvedPaths;
@@ -127,17 +128,16 @@ export default function (globs: string[], options: IResolverOptions): IMappedPat
 function resolveVirtualPath(
     actual: string,
     virtPathMaps: IVirtualPathMapping[],
-    cwd: string,
     log: Logger
 ): [string, number] {
     // Try to resolve a virtual path
-    log.trace("Attempting to resolve virtual path", { path: actual });
+    log.trace("Attempting to resolve virtual path", { actual });
 
     let preference = 0;
     for (const { match, replace } of virtPathMaps) {
         if (actual.startsWith(match)) {
             // Virtual path match discovered
-            const virtual = resolvePath(cwd, actual.replace(match, replace));
+            const virtual = actual.replace(match, replace);
             log.trace("Resolved virtual path", { actual, virtual, preference });
             return [ virtual, preference ];
         }
@@ -147,5 +147,5 @@ function resolveVirtualPath(
 
     // No matches, lowest preference
     log.trace("No matching virtual path mappings", { actual, preference: 0 });
-    return [ resolvePath(cwd, actual), 0] ;
+    return [ actual, 0] ;
 }

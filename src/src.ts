@@ -48,8 +48,9 @@ class VinylFsVPathSrc extends Readable {
         super({ objectMode: true });
 
         const globs = Array.isArray(config.globs) ? config.globs : [ config.globs ];
-        const virtPathMaps = config.virtPathMaps;
         const cwd = config.cwd ?? process.cwd();
+        // Mappings are map absolute within resolver
+        const virtPathMaps = config.virtPathMaps;
         this.logger = config.logger ?? dummyLogger;
 
         this.files = resolver(
