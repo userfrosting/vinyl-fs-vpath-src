@@ -1,8 +1,9 @@
 import { Readable } from "stream";
-import resolver, { IVirtualPathMapping, IMappedPath } from "./resolver.js";
+import resolver, { IVirtPathMapping, IMappedPath } from "./resolver.js";
 import { dummyLogger, Logger } from "ts-log";
 import Vinyl from "vinyl";
-import { readFileSync } from "fs";
+import getStream from "get-stream";
+import vinylFs from "vinyl-fs";
 
 /**
  * @public
@@ -14,22 +15,47 @@ export interface IConfig {
     globs: string|string[];
 
     /**
-     * Virtual path mappings.
-     * Collision resolution uses the last mapping to select the file.
-     * Resolution is *not* recursive.
+     * Virtual path mappings. Collision resolution uses the last mapping to select the file.
+     * Internally mapping occurs on absolute path strings, conversion and normalisation is
+     * performed automatically. Resolution is *not* recursive.
      */
-    virtPathMaps: IVirtualPathMapping[];
+    virtPathMaps: IVirtPathMapping[];
 
     /**
      * Current working directory.
-     * NodeJS cwd is used if not supplied.
+     * Default: process.cwd()
      */
     cwd?: string;
 
     /**
-     * Optional logger.
+     * Optional logger. Use this to debug issues and trace behaviours.
+     * Adheres to interface defined in ts-log package.
      */
     logger?: Logger;
+
+    /**
+     * Specifies the folder relative to the cwd
+     * This is used to determine the file names when saving in .dest()
+     * Default: cwd
+     */
+    base?: string;
+
+    /**
+     * Only find files that have been modified since the time specified
+     */
+    since?: Date | number;
+
+    /**
+     * Causes the BOM to be removed on UTF-8 encoded files. Set to false if you need the BOM for some reason.
+     * Default: true
+     */
+    removeBOM?: boolean;
+
+    /**
+     * Setting this to true will enable sourcemaps.
+     * Default: false
+     */
+    sourcemaps?: boolean;
 }
 
 class VinylFsVPathSrc extends Readable {
@@ -41,6 +67,8 @@ class VinylFsVPathSrc extends Readable {
 
     private readonly logger: Logger;
 
+    private readonly vinylFsSrcOptions: vinylFs.SrcOptions;
+
     /**
      * @param config - Source configuration.
      */
@@ -51,6 +79,8 @@ class VinylFsVPathSrc extends Readable {
         const cwd = config.cwd ?? process.cwd();
         // Mappings are map absolute within resolver
         const virtPathMaps = config.virtPathMaps;
+
+        // Logger
         this.logger = config.logger ?? dummyLogger;
 
         this.files = resolver(
@@ -63,31 +93,54 @@ class VinylFsVPathSrc extends Readable {
             this.logger.error("No files found", { globs, virtPathMaps });
             throw new Error("No files found");
         }
+
+        // Vinyl FS src options
+        this.vinylFsSrcOptions = {
+            cwd: cwd,
+            base: config.base ?? cwd,
+            since: config.since,
+            allowEmpty: Boolean(config.since),
+            removeBOM: config.removeBOM ?? true,
+            sourcemaps: config.sourcemaps ?? false,
+        };
     }
 
-    _read() {
-        if (this.files.length > 0) {
-            // Send through next file
-
+    /**
+     * Internal only. Instructs that a new file needs to be pushed out.
+     */
+    async _read() {
+        while (this.files.length > 0) {
             const { actual, virtual } = this.files.pop();
-            this.logger.trace("Pushing file", { actual, virtual });
 
-            const history: string[] = [];
-            if (virtual !== actual) {
-                history.push(actual);
+            // Grab file via vinyl-fs
+            const files = await getStream.array<Vinyl>(vinylFs.src(actual, this.vinylFsSrcOptions));
+
+            // Handle 'since' filter
+            if (files.length === 0 && this.vinylFsSrcOptions.allowEmpty) {
+                // Missing file allowed
+                this.logger.trace(
+                    "File ignored as filtered by 'since' option",
+                    { actual, virtual, since: this.vinylFsSrcOptions.since }
+                );
+                // Onto next iteration for the next file
+                continue;
             }
 
-            this.push(new Vinyl({
-                history,
-                path: virtual,
-                contents: readFileSync(actual),
-            }));
-            this.logger.trace("Pushed file", { actual, virtual });
+            // Adjust path
+            const file = files[0];
+
+            if (actual !== virtual) {
+                file.path = virtual;
+            }
+
+            this.logger.trace("Pushing file", { actual, virtual });
+            this.push(file);
+            return;
         }
-        else {
-            this.logger.trace("No more files to send, ending stream");
-            this.push(null);
-        }
+
+        this.logger.trace("No more files to send");
+        this.push(null);
+        return;
     }
 }
 

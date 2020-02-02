@@ -48,11 +48,14 @@
         "@microsoft/api-extractor": "^7.7.5",
         "@types/node": "^13.1.8",
         "@types/vinyl": "^2.0.4",
+        "@types/vinyl-fs": "^2.4.11",
         "ava": "^3.0.0",
         "changelog-updater": "^1.1.0",
         "get-stream": "^5.1.0",
         "nyc": "^15.0.0",
-        "typescript": "^3.7.5"
+        "sort-on": "^4.1.0",
+        "typescript": "^3.7.5",
+        "vinyl-fs": "^3.0.3"
     },
     "engines": {
         "node": ">=10.0.0"

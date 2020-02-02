@@ -5,7 +5,7 @@ import { resolve as resolvePath } from "path";
 /**
  * @public
  */
-export interface IVirtualPathMapping {
+export interface IVirtPathMapping {
     /**
      * Path prefix to match (relative to cwd).
      */
@@ -36,7 +36,7 @@ interface IResolverOptions {
     /**
      * Virtual path mappings.
      */
-    virtPathMaps: IVirtualPathMapping[];
+    virtPathMaps: IVirtPathMapping[];
 
     /**
      * Current working directory.
@@ -127,7 +127,7 @@ export default function (globs: string[], options: IResolverOptions): IMappedPat
  */
 function resolveVirtualPath(
     actual: string,
-    virtPathMaps: IVirtualPathMapping[],
+    virtPathMaps: IVirtPathMapping[],
     log: Logger
 ): [string, number] {
     // Try to resolve a virtual path
