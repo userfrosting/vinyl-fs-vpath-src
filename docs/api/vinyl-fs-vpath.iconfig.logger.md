@@ -4,7 +4,7 @@
 
 ## IConfig.logger property
 
-Optional logger.
+Optional logger. Use this to debug issues and trace behaviours. Adheres to interface defined in ts-log package.
 
 <b>Signature:</b>
 

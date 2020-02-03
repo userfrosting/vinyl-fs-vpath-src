@@ -4,7 +4,7 @@
 
 ## IConfig.cwd property
 
-Current working directory. NodeJS cwd is used if not supplied.
+Current working directory. Default: process.cwd()
 
 <b>Signature:</b>
 

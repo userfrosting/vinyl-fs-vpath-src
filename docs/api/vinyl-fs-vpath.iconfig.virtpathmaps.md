@@ -4,10 +4,10 @@
 
 ## IConfig.virtPathMaps property
 
-Virtual path mappings. Collision resolution uses the last mapping to select the file. Resolution is \*not\* recursive.
+Virtual path mappings. Collision resolution uses the last mapping to select the file. Internally mapping occurs on absolute path strings, conversion and normalisation is performed automatically. Resolution is \*not\* recursive.
 
 <b>Signature:</b>
 
 ```typescript
-virtPathMaps: IVirtualPathMapping[];
+virtPathMaps: IVirtPathMapping[];
 ```
