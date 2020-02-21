@@ -115,17 +115,6 @@ class VinylFsVPathSrc extends Readable {
             // Grab file via vinyl-fs
             const files = await getStream.array<Vinyl>(vinylFs.src(actual, this.vinylFsSrcOptions));
 
-            // Handle 'since' filter
-            if (files.length === 0 && this.vinylFsSrcOptions.allowEmpty) {
-                // Missing file allowed
-                this.logger.trace(
-                    "File ignored as filtered by 'since' option",
-                    { actual, virtual, since: this.vinylFsSrcOptions.since }
-                );
-                // Onto next iteration for the next file
-                continue;
-            }
-
             // Adjust path
             const file = files[0];
 
