@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Renamed interface `IVirtPathMapping` to `IPathMapper`.
+- Renamed configuration property `virtPathMaps` to `pathMappings`.
+
+### Fixed
+- Moved required dependency into package dependencies from dev dependencies.
+
 ## [1.0.0-alpha.0] - 2020-02-21
 
 ## [0.3.0] - 2020-02-03

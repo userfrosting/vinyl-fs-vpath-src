@@ -1,5 +1,5 @@
 import { Readable } from "stream";
-import resolver, { IVirtPathMapping, IMappedPath } from "./resolver.js";
+import resolver, { IPathMapper, IMappedPath } from "./resolver.js";
 import { dummyLogger, Logger } from "ts-log";
 import Vinyl from "vinyl";
 import getStream from "get-stream";
@@ -19,7 +19,7 @@ export interface IConfig {
      * Internally mapping occurs on absolute path strings, conversion and normalisation is
      * performed automatically. Resolution is *not* recursive.
      */
-    virtPathMaps: IVirtPathMapping[];
+    pathMappings: IPathMapper[];
 
     /**
      * Current working directory.
@@ -78,7 +78,7 @@ class VinylFsVPathSrc extends Readable {
         const globs = Array.isArray(config.globs) ? config.globs : [ config.globs ];
         const cwd = config.cwd ?? process.cwd();
         // Mappings are map absolute within resolver
-        const virtPathMaps = config.virtPathMaps;
+        const virtPathMaps = config.pathMappings;
 
         // Logger
         this.logger = config.logger ?? dummyLogger;

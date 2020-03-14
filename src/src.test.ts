@@ -11,7 +11,7 @@ test("Throws if no files resolved", async t => {
     await t.throwsAsync(
         async () => await getStream.array<Vinyl>(src({
             globs: "./test-data/scripts-0/**/*",
-            virtPathMaps: [],
+            pathMappings: [],
             cwd: process.cwd(),
             logger: dummyLogger,
         })),
@@ -24,7 +24,7 @@ test("Throws if no files resolved", async t => {
     await t.throwsAsync(
         async () => await getStream.array<Vinyl>(src({
             globs: "./test-data/scripts-1/0.js",
-            virtPathMaps: [],
+            pathMappings: [],
         })),
         {
             instanceOf: Error,
@@ -37,7 +37,7 @@ test("Pushes expected files into stream", async t => {
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
             globs: "./test-data/**/*.js",
-            virtPathMaps: [],
+            pathMappings: [],
         })),
         "history"
     );
@@ -65,7 +65,7 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
             globs: "./test-data/**/*.js",
-            virtPathMaps: [],
+            pathMappings: [],
             base: process.cwd(),
             removeBOM: false,
             sourcemaps: true,
@@ -95,7 +95,7 @@ test("Pushes expected files into stream with vPaths and simple glob", async t =>
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
             globs: "./test-data/**/*.js",
-            virtPathMaps: [
+            pathMappings: [
                 { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
                 { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
                 { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
@@ -133,7 +133,7 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
             globs: [ "./test-data/**/*.js", "!./test-data/scripts-2/**/*.js" ],
-            virtPathMaps: [
+            pathMappings: [
                 { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
                 { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
                 { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
@@ -166,7 +166,7 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
 test("Outputs equivilant to vinyl-fs package", async t => {
     const actual = await getStream.array<Vinyl>(src({
         globs: [ "./test-data/**/*.js" ],
-        virtPathMaps: [],
+        pathMappings: [],
     }));
 
     const expected = await getStream.array<Vinyl>(vinylFs.src(

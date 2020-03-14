@@ -1,4 +1,4 @@
-import test, { LogFn } from "ava";
+import test from "ava";
 import resolver from "./resolver";
 import { resolve as resolvePath } from "path";
 import { dummyLogger } from "ts-log";
