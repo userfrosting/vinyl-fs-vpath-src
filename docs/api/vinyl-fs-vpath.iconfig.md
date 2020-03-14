@@ -19,8 +19,8 @@ export interface IConfig
 |  [cwd](./vinyl-fs-vpath.iconfig.cwd.md) | <code>string</code> | Current working directory. Default: process.cwd() |
 |  [globs](./vinyl-fs-vpath.iconfig.globs.md) | <code>string &#124; string[]</code> | Input file matchers. |
 |  [logger](./vinyl-fs-vpath.iconfig.logger.md) | <code>Logger</code> | Optional logger. Use this to debug issues and trace behaviours. Adheres to interface defined in ts-log package. |
+|  [pathMappings](./vinyl-fs-vpath.iconfig.pathmappings.md) | <code>IPathMapper[]</code> | Virtual path mappings. Collision resolution uses the last mapping to select the file. Internally mapping occurs on absolute path strings, conversion and normalisation is performed automatically. Resolution is \*not\* recursive. |
 |  [removeBOM](./vinyl-fs-vpath.iconfig.removebom.md) | <code>boolean</code> | Causes the BOM to be removed on UTF-8 encoded files. Set to false if you need the BOM for some reason. Default: true |
 |  [since](./vinyl-fs-vpath.iconfig.since.md) | <code>Date &#124; number</code> | Only find files that have been modified since the time specified |
 |  [sourcemaps](./vinyl-fs-vpath.iconfig.sourcemaps.md) | <code>boolean</code> | Setting this to true will enable sourcemaps. Default: false |
-|  [virtPathMaps](./vinyl-fs-vpath.iconfig.virtpathmaps.md) | <code>IVirtPathMapping[]</code> | Virtual path mappings. Collision resolution uses the last mapping to select the file. Internally mapping occurs on absolute path strings, conversion and normalisation is performed automatically. Resolution is \*not\* recursive. |
 

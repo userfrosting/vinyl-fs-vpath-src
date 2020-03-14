@@ -15,5 +15,5 @@
 |  Interface | Description |
 |  --- | --- |
 |  [IConfig](./vinyl-fs-vpath.iconfig.md) |  |
-|  [IVirtPathMapping](./vinyl-fs-vpath.ivirtpathmapping.md) |  |
+|  [IPathMapper](./vinyl-fs-vpath.ipathmapper.md) |  |
 
