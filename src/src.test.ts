@@ -175,13 +175,14 @@ test("Outputs equivilant to vinyl-fs package", async t => {
     ));
 
     // atime varies so we override to something more stable
+    const atime = new Date();
     actual.forEach(file => {
-        file.stat.atime = new Date();
-        file.stat.atimeMs = 0;
+        file.stat.atime = atime;
+        file.stat.atimeMs = atime.getMilliseconds();
     });
     expected.forEach(file => {
-        file.stat.atime = new Date();
-        file.stat.atimeMs = 0;
+        file.stat.atime = atime;
+        file.stat.atimeMs = atime.getMilliseconds();
     });
 
     t.deepEqual(sortOn(actual, "history"), sortOn(expected, "history"));
