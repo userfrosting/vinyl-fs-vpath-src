@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Formalized error for when a previously resolved file fails to be loaded.
+
 ## [1.0.0] - 2020-03-14
 
 ### Changed
