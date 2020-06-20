@@ -58,6 +58,25 @@ export interface IConfig {
     sourcemaps?: boolean;
 }
 
+/**
+ * The error type used when a previously resolved file cannot be found.
+ */
+class FileGoneError extends Error {
+    public readonly meta: {
+        resolvedPath: string;
+        virtualPath: string;
+    };
+
+    constructor(resolvedPath: string, virtualPath: string) {
+        super(" - " + JSON.stringify({ resolvedPath, virtualPath }));
+        this.name = this.constructor.name;
+        this.meta = {
+            resolvedPath,
+            virtualPath,
+        };
+    }
+}
+
 class VinylFsVPathSrc extends Readable {
 
     /**
@@ -114,6 +133,16 @@ class VinylFsVPathSrc extends Readable {
 
             // Grab file via vinyl-fs
             const files = await getStream.array<Vinyl>(vinylFs.src(actual, this.vinylFsSrcOptions));
+
+            if (files.length === 0) {
+                // This can happen when there are file changes during processing, or possibly due to a implementation flaw as hinted at in #79
+                throw new FileGoneError(actual, virtual);
+            }
+
+            if (files.length > 1) {
+                // In theory this shouldn't happen, but it pays to at be sure
+                this.logger.warn("Expected to find exactly 1 file but instead found more", { actual, virtual, files });
+            }
 
             // Adjust path
             const file = files[0];
