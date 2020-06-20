@@ -15,6 +15,6 @@ export interface IPathMapper
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [match](./vinyl-fs-vpath.ipathmapper.match.md) | <code>string</code> | Path prefix to match (relative to cwd). |
-|  [replace](./vinyl-fs-vpath.ipathmapper.replace.md) | <code>string</code> | Value to replace matched portion of path with. |
+|  [match](./vinyl-fs-vpath.ipathmapper.match.md) | string | Path prefix to match (relative to cwd). |
+|  [replace](./vinyl-fs-vpath.ipathmapper.replace.md) | string | Value to replace matched portion of path with. |
 

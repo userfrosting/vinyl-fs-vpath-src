@@ -16,9 +16,9 @@ export declare function src(config: IConfig): Readable;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  config | <code>IConfig</code> | Source configuration. |
+|  config | [IConfig](./vinyl-fs-vpath.iconfig.md) | Source configuration. |
 
 <b>Returns:</b>
 
-`Readable`
+Readable
 
