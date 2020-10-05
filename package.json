@@ -51,7 +51,7 @@
         "@types/vinyl": "^2.0.4",
         "@types/vinyl-fs": "^2.4.11",
         "ava": "^3.5.0",
-        "changelog-updater": "^1.1.0",
+        "changelog-updater": "^2.0.2",
         "get-stream": "^6.0.0",
         "nyc": "^15.0.0",
         "sort-on": "^4.1.0",
