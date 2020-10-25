@@ -8,7 +8,7 @@
 
 |  Function | Description |
 |  --- | --- |
-|  [src(config)](./vinyl-fs-vpath.src.md) | Vinyl source that maps input files with virtual paths. Files are overriden on collision. |
+|  [src(config)](./vinyl-fs-vpath.src.md) | Vinyl source that maps input files with virtual paths. Files are overridden on collision. |
 
 ## Interfaces
 

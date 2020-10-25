@@ -4,7 +4,7 @@
 
 ## src() function
 
-Vinyl source that maps input files with virtual paths. Files are overriden on collision.
+Vinyl source that maps input files with virtual paths. Files are overridden on collision.
 
 <b>Signature:</b>
 

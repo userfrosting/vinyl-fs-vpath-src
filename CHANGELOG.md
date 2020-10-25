@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.0] - 2020-10-25
+
 ### Changed
 * `since` configuration option. Use [vinyl-filter-since](https://www.npmjs.com/package/vinyl-filter-since) if functionality is needed. This may be restored in a future release.
 * `removeBOM` configuration option. Use [gulp-stripbom](https://www.npmjs.com/package/gulp-stripbom) if functionality is needed. This may be restored in a future release.

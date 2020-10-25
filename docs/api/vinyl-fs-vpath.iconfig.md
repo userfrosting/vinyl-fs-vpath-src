@@ -20,7 +20,4 @@ export interface IConfig
 |  [globs](./vinyl-fs-vpath.iconfig.globs.md) | string \| string\[\] | Input file matchers. |
 |  [logger](./vinyl-fs-vpath.iconfig.logger.md) | Logger | Optional logger. Use this to debug issues and trace behaviours. Adheres to interface defined in ts-log package. |
 |  [pathMappings](./vinyl-fs-vpath.iconfig.pathmappings.md) | [IPathMapper](./vinyl-fs-vpath.ipathmapper.md)<!-- -->\[\] | Virtual path mappings. Collision resolution uses the last mapping to select the file. Internally mapping occurs on absolute path strings, conversion and normalisation is performed automatically. Resolution is \*not\* recursive. |
-|  [removeBOM](./vinyl-fs-vpath.iconfig.removebom.md) | boolean | Causes the BOM to be removed on UTF-8 encoded files. Set to false if you need the BOM for some reason. Default: true |
-|  [since](./vinyl-fs-vpath.iconfig.since.md) | Date \| number | Only find files that have been modified since the time specified |
-|  [sourcemaps](./vinyl-fs-vpath.iconfig.sourcemaps.md) | boolean | Setting this to true will enable sourcemaps. Default: false |
 
