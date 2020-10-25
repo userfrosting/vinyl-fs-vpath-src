@@ -101,7 +101,8 @@ class VinylFsVPathSrc extends Readable {
                 this.push(file);
                 return;
             } catch (error) {
-                // This can happen when there are file changes during processing
+                // This can happen when there are file changes during processing, difficult to test
+                /* istanbul ignore next */
                 throw new PluginError("userfrosting/vinyl-fs-vpath", error);
             }
         }
