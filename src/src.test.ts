@@ -5,7 +5,31 @@ import { dummyLogger } from "ts-log";
 import vinylFs from "vinyl-fs";
 import sortOn from "sort-on";
 import Vinyl from "vinyl";
+import mockFs from "mock-fs";
 import { resolve as resolvePath } from "path";
+
+test.before(t => {
+    mockFs({
+        "./test-data": {
+            "scripts-1": {
+                "a.js": `window.a = "foo";`,
+                "b.js": "function bar() {}",
+            },
+            "scripts-2": {
+                "a.js": "const add = (a, b) => a + b;",
+                "c.js": `"use strict";\nalert("danger!");`,
+            },
+            "scripts-3": {
+                "b.js": `(function ($) {\n    $('body').foo();\n}(jQuery))`,
+                "glob [syntax].js": `export function foo() {}`,
+            },
+        }
+    });
+});
+
+test.after(t => {
+    mockFs.restore();
+});
 
 test("Throws if no files resolved", async t => {
     await t.throwsAsync(
@@ -67,8 +91,6 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
             globs: "./test-data/**/*.js",
             pathMappings: [],
             base: process.cwd(),
-            removeBOM: false,
-            sourcemaps: true,
         })),
         "history"
     );
