@@ -2,6 +2,7 @@ import { Readable } from "stream";
 import resolver, { IPathMapper, IMappedPath } from "./resolver.js";
 import { dummyLogger, Logger } from "ts-log";
 import vinylFile, { VinylFileOptions } from "vinyl-file";
+import PluginError from "plugin-error";
 
 /**
  * @public
@@ -37,25 +38,6 @@ export interface IConfig {
      * Default: cwd
      */
     base?: string;
-}
-
-/**
- * The error type used when a previously resolved file cannot be found.
- */
-class FileGoneError extends Error {
-    public readonly meta: {
-        resolvedPath: string;
-        virtualPath: string;
-    };
-
-    constructor(resolvedPath: string, virtualPath: string) {
-        super(" - " + JSON.stringify({ resolvedPath, virtualPath }));
-        this.name = this.constructor.name;
-        this.meta = {
-            resolvedPath,
-            virtualPath,
-        };
-    }
 }
 
 class VinylFsVPathSrc extends Readable {
@@ -108,15 +90,20 @@ class VinylFsVPathSrc extends Readable {
         while (this.files.length > 0) {
             const { actual, virtual } = this.files.pop();
 
-            const file = vinylFile.readSync(actual, this.vinylFsSrcOptions);
+            try {
+                const file = vinylFile.readSync(actual, this.vinylFsSrcOptions);
 
-            if (actual !== virtual) {
-                file.path = virtual;
+                if (actual !== virtual) {
+                    file.path = virtual;
+                }
+
+                this.logger.trace("Pushing file", { actual, virtual });
+                this.push(file);
+                return;
+            } catch (error) {
+                // This can happen when there are file changes during processing
+                throw new PluginError("userfrosting/vinyl-fs-vpath", error);
             }
-
-            this.logger.trace("Pushing file", { actual, virtual });
-            this.push(file);
-            return;
         }
 
         this.logger.trace("No more files to send");

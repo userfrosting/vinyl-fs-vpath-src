@@ -42,6 +42,7 @@
     "dependencies": {
         "esm": "^3.2.25",
         "globby": "^11.0.1",
+        "plugin-error": "^1.0.1",
         "ts-log": "^2.2.3",
         "vinyl-file": "^3.0.0"
     },
