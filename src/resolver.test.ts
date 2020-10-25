@@ -1,7 +1,30 @@
 import test from "ava";
-import resolver from "./resolver";
 import { resolve as resolvePath } from "path";
+import mockFs from "mock-fs";
 import { dummyLogger } from "ts-log";
+import resolver from "./resolver";
+
+test.before(t => {
+    mockFs({
+        "./test-data": {
+            "scripts-1": {
+                "a.js": `window.a = "foo";`,
+                "b.js": "function bar() {}",
+            },
+            "scripts-2": {
+                "a.js": "const add = (a, b) => a + b;",
+                "c.js": `"use strict";\nalert("danger!");`,
+            },
+            "scripts-3": {
+                "b.js": `(function ($) {\n    $('body').foo();\n}(jQuery))`,
+            },
+        }
+    });
+});
+
+test.after(t => {
+    mockFs.restore();
+});
 
 test("Returns all glob matched paths when no vpaths provided", t => {
     const file1 = resolvePath("./test-data/scripts-1/a.js");
