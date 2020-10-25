@@ -21,6 +21,7 @@ test.before(t => {
             },
             "scripts-3": {
                 "b.js": `(function ($) {\n    $('body').foo();\n}(jQuery))`,
+                "glob [syntax].js": `export function foo() {}`,
             },
         }
     });

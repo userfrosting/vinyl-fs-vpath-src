@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+* File names containing glob syntax failing to be read correctly due to unescaped glob syntax being processed by `vinyl-fs` internally. [#79](https://github.com/userfrosting/vinyl-fs-vpath/issues/79)
+
 ## [1.0.1] - 2020-06-20
 
 ### Changed

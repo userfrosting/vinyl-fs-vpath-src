@@ -4,6 +4,7 @@ import { dummyLogger, Logger } from "ts-log";
 import Vinyl from "vinyl";
 import getStream from "get-stream";
 import vinylFs from "vinyl-fs";
+import globEscape from "glob-escape";
 
 /**
  * @public
@@ -132,7 +133,12 @@ class VinylFsVPathSrc extends Readable {
             const { actual, virtual } = this.files.pop();
 
             // Grab file via vinyl-fs
-            const files = await getStream.array<Vinyl>(vinylFs.src(actual, this.vinylFsSrcOptions));
+            const files = await getStream.array<Vinyl>(
+                vinylFs.src(
+                    globEscape(actual),
+                    this.vinylFsSrcOptions
+                )
+            );
 
             if (files.length === 0) {
                 // This can happen when there are file changes during processing, or possibly due to a implementation flaw as hinted at in #79
@@ -164,7 +170,7 @@ class VinylFsVPathSrc extends Readable {
 
 /**
  * Vinyl source that maps input files with virtual paths.
- * Files are overriden on collision.
+ * Files are overridden on collision.
  * @param config - Source configuration.
  *
  * @public
