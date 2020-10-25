@@ -91,8 +91,6 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
             globs: "./test-data/**/*.js",
             pathMappings: [],
             base: process.cwd(),
-            removeBOM: false,
-            sourcemaps: true,
         })),
         "history"
     );

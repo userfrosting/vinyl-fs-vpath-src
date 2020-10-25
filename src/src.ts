@@ -1,10 +1,7 @@
 import { Readable } from "stream";
 import resolver, { IPathMapper, IMappedPath } from "./resolver.js";
 import { dummyLogger, Logger } from "ts-log";
-import Vinyl from "vinyl";
-import getStream from "get-stream";
-import vinylFs from "vinyl-fs";
-import globEscape from "glob-escape";
+import vinylFile, { VinylFileOptions } from "vinyl-file";
 
 /**
  * @public
@@ -40,23 +37,6 @@ export interface IConfig {
      * Default: cwd
      */
     base?: string;
-
-    /**
-     * Only find files that have been modified since the time specified
-     */
-    since?: Date | number;
-
-    /**
-     * Causes the BOM to be removed on UTF-8 encoded files. Set to false if you need the BOM for some reason.
-     * Default: true
-     */
-    removeBOM?: boolean;
-
-    /**
-     * Setting this to true will enable sourcemaps.
-     * Default: false
-     */
-    sourcemaps?: boolean;
 }
 
 /**
@@ -87,7 +67,7 @@ class VinylFsVPathSrc extends Readable {
 
     private readonly logger: Logger;
 
-    private readonly vinylFsSrcOptions: vinylFs.SrcOptions;
+    private readonly vinylFsSrcOptions: VinylFileOptions;
 
     /**
      * @param config - Source configuration.
@@ -118,10 +98,6 @@ class VinylFsVPathSrc extends Readable {
         this.vinylFsSrcOptions = {
             cwd: cwd,
             base: config.base ?? cwd,
-            since: config.since,
-            allowEmpty: Boolean(config.since),
-            removeBOM: config.removeBOM ?? true,
-            sourcemaps: config.sourcemaps ?? false,
         };
     }
 
@@ -132,26 +108,7 @@ class VinylFsVPathSrc extends Readable {
         while (this.files.length > 0) {
             const { actual, virtual } = this.files.pop();
 
-            // Grab file via vinyl-fs
-            const files = await getStream.array<Vinyl>(
-                vinylFs.src(
-                    globEscape(actual),
-                    this.vinylFsSrcOptions
-                )
-            );
-
-            if (files.length === 0) {
-                // This can happen when there are file changes during processing, or possibly due to a implementation flaw as hinted at in #79
-                throw new FileGoneError(actual, virtual);
-            }
-
-            if (files.length > 1) {
-                // In theory this shouldn't happen, but it pays to at be sure
-                this.logger.warn("Expected to find exactly 1 file but instead found more", { actual, virtual, files });
-            }
-
-            // Adjust path
-            const file = files[0];
+            const file = vinylFile.readSync(actual, this.vinylFsSrcOptions);
 
             if (actual !== virtual) {
                 file.path = virtual;

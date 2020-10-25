@@ -17,6 +17,7 @@ test.before(t => {
             },
             "scripts-3": {
                 "b.js": `(function ($) {\n    $('body').foo();\n}(jQuery))`,
+                "glob [syntax].js": `export function foo() {}`,
             },
         }
     });
@@ -32,6 +33,7 @@ test("Returns all glob matched paths when no vpaths provided", t => {
     const file3 = resolvePath("./test-data/scripts-2/a.js");
     const file4 = resolvePath("./test-data/scripts-2/c.js");
     const file5 = resolvePath("./test-data/scripts-3/b.js");
+    const file6 = resolvePath("./test-data/scripts-3/glob [syntax].js");
 
     t.deepEqual(
         resolver(
@@ -44,6 +46,7 @@ test("Returns all glob matched paths when no vpaths provided", t => {
             { virtual: file3, actual: file3 },
             { virtual: file4, actual: file4 },
             { virtual: file5, actual: file5 },
+            { virtual: file6, actual: file6 },
         ]
     );
 });
@@ -66,6 +69,7 @@ test.only("Overrides when vpaths intersect", t => {
         { virtual: resolvePath("./test-data/scripts/a.js"), actual: resolvePath("./test-data/scripts-2/a.js") },
         { virtual: resolvePath("./test-data/scripts/b.js"), actual: resolvePath("./test-data/scripts-1/b.js") },
         { virtual: resolvePath("./test-data/scripts/c.js"), actual: resolvePath("./test-data/scripts-2/c.js") },
+        { virtual: resolvePath("./test-data/scripts/glob [syntax].js"), actual: resolvePath("./test-data/scripts-3/glob [syntax].js") },
     ];
 
     t.deepEqual(actual, expected);
