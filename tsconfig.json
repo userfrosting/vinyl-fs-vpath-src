@@ -10,6 +10,11 @@
         "declaration": true,
         "target": "es2017",
         "outDir": "./dist/",
-        "sourceMap": true
+        "sourceMap": true,
+        // TODO Remove once self-referencing supported https://github.com/microsoft/TypeScript/issues/38675
+        "baseUrl": "./src/",
+        "paths": {
+            "@userfrosting/vinyl-fs-vpath": [ "./main" ]
+        }
     }
 }

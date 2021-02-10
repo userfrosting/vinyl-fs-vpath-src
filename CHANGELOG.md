@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Removed `esm` loader in favour of native ESM support.
+- Raised minimum NodeJS version from 10 to 12.17.0.
+
 ## [2.0.0] - 2020-10-25
 
 ### Changed
-* `since` configuration option. Use [vinyl-filter-since](https://www.npmjs.com/package/vinyl-filter-since) if functionality is needed. This may be restored in a future release.
-* `removeBOM` configuration option. Use [gulp-stripbom](https://www.npmjs.com/package/gulp-stripbom) if functionality is needed. This may be restored in a future release.
-* `sourcemaps` configuration option. Use [gulp-sourcemaps](https://www.npmjs.com/package/gulp-sourcemaps) if functionality is needed. This may be restored in a future release.
+- `since` configuration option. Use [vinyl-filter-since](https://www.npmjs.com/package/vinyl-filter-since) if functionality is needed. This may be restored in a future release.
+- `removeBOM` configuration option. Use [gulp-stripbom](https://www.npmjs.com/package/gulp-stripbom) if functionality is needed. This may be restored in a future release.
+- `sourcemaps` configuration option. Use [gulp-sourcemaps](https://www.npmjs.com/package/gulp-sourcemaps) if functionality is needed. This may be restored in a future release.
 
 ### Fixed
 * File names containing glob syntax failing to be read correctly due to unescaped glob syntax being processed by `vinyl-fs` internally. [#79](https://github.com/userfrosting/vinyl-fs-vpath/issues/79)

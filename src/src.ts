@@ -100,9 +100,9 @@ class VinylFsVPathSrc extends Readable {
                 this.logger.trace("Pushing file", { actual, virtual });
                 this.push(file);
                 return;
+            /* c8 ignore next 4 */
             } catch (error) {
                 // This can happen when there are file changes during processing, difficult to test
-                /* istanbul ignore next */
                 throw new PluginError("userfrosting/vinyl-fs-vpath", error);
             }
         }

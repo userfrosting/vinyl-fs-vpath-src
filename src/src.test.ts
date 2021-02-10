@@ -1,5 +1,5 @@
 import test from "ava";
-import { src } from "./src";
+import { src } from "./src.js";
 import getStream from "get-stream";
 import { dummyLogger } from "ts-log";
 import vinylFs from "vinyl-fs";

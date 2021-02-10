@@ -1,2 +1,2 @@
-export { src, IConfig } from "./src";
-export { IPathMapper } from "./resolver";
+export { src, IConfig } from "./src.js";
+export { IPathMapper } from "./resolver.js";

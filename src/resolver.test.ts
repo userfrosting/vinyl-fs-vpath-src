@@ -2,7 +2,7 @@ import test from "ava";
 import { resolve as resolvePath } from "path";
 import mockFs from "mock-fs";
 import { dummyLogger } from "ts-log";
-import resolver from "./resolver";
+import resolver from "./resolver.js";
 
 test.before(t => {
     mockFs({
