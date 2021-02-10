@@ -1,12 +1,12 @@
 import test from "ava";
 import { src } from "./src.js";
 import getStream from "get-stream";
-import { dummyLogger } from "ts-log";
 import vinylFs from "vinyl-fs";
 import sortOn from "sort-on";
 import Vinyl from "vinyl";
 import mockFs from "mock-fs";
 import { resolve as resolvePath } from "path";
+import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 
 test.before(t => {
     mockFs({
@@ -37,7 +37,7 @@ test("Throws if no files resolved", async t => {
             globs: "./test-data/scripts-0/**/*",
             pathMappings: [],
             cwd: process.cwd(),
-            logger: dummyLogger,
+            logger: logAdapter(t.log),
         })),
         {
             instanceOf: Error,
@@ -189,6 +189,7 @@ test("Outputs equivilant to vinyl-fs package", async t => {
     const actual = await getStream.array<Vinyl>(src({
         globs: [ "./test-data/**/*.js" ],
         pathMappings: [],
+        logger: logAdapter(t.log),
     }));
 
     const expected = await getStream.array<Vinyl>(vinylFs.src(

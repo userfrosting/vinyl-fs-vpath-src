@@ -1,7 +1,7 @@
 import test from "ava";
 import { resolve as resolvePath } from "path";
 import mockFs from "mock-fs";
-import { dummyLogger } from "ts-log";
+import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import resolver from "./resolver.js";
 
 test.before(t => {
@@ -38,7 +38,7 @@ test("Returns all glob matched paths when no vpaths provided", t => {
     t.deepEqual(
         resolver(
             [ "./test-data/**/*.js" ],
-            { virtPathMaps: [], cwd: process.cwd(), logger: dummyLogger }
+            { virtPathMaps: [], cwd: process.cwd(), logger: logAdapter(t.log), }
         ),
         [
             { virtual: file1, actual: file1 },
@@ -61,7 +61,7 @@ test.only("Overrides when vpaths intersect", t => {
                 { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
             ],
             cwd: process.cwd(),
-            logger: dummyLogger
+            logger: logAdapter(t.log),
         }
     );
 
