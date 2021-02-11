@@ -192,10 +192,14 @@ test("Outputs equivilant to vinyl-fs package", async t => {
         logger: logAdapter(t.log),
     }));
 
+    t.log("before");
+
     const expected = await getStream.array<Vinyl>(vinylFs.src(
         "./test-data/**/*.js",
         { base: process.cwd() }
     ));
+
+    t.log("after");
 
     // atime varies so we override to something more stable
     const atime = new Date();
