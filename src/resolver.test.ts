@@ -2,6 +2,7 @@ import pTest, { TestInterface } from "ava";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import del from "del";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import resolver from "./resolver.js";
 
@@ -40,7 +41,7 @@ test.before(t => {
 });
 
 test.after(t => {
-    fs.rmSync(t.context.pathAsAbsolute(""), { recursive: true });
+    del.sync(t.context.pathAsAbsolute("") + "/**");
 });
 
 test("Returns all glob matched paths when no vpaths provided", t => {

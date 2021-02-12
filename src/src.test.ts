@@ -8,6 +8,7 @@ import path from "path";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import os from "os";
 import fs from "fs";
+import del from "del";
 
 // TODO Remove dependence on file system, this is currently an integration test retrofitted as a unit test
 const test = pTest as TestInterface<{
@@ -44,7 +45,7 @@ test.before(t => {
 });
 
 test.after(t => {
-    fs.rmSync(t.context.pathAsAbsolute(""), { recursive: true });
+    del.sync(t.context.pathAsAbsolute("") + "/**");
 });
 
 test("Throws if no files resolved", async t => {
