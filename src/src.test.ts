@@ -1,40 +1,56 @@
-import test from "ava";
+import pTest, { TestInterface } from "ava";
 import { src } from "./src.js";
 import getStream from "get-stream";
 import vinylFs from "vinyl-fs";
 import sortOn from "sort-on";
 import Vinyl from "vinyl";
-import mockFs from "mock-fs";
-import { resolve as resolvePath } from "path";
+import path from "path";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
+import os from "os";
+import fs from "fs";
+
+// TODO Remove dependence on file system, this is currently an integration test retrofitted as a unit test
+const test = pTest as TestInterface<{
+    pathAsRelative: (naivePath: string) => string,
+    pathAsAbsolute: (naivePath: string) => string,
+}>;
 
 test.before(t => {
-    mockFs({
-        "./test-data": {
-            "scripts-1": {
-                "a.js": `window.a = "foo";`,
-                "b.js": "function bar() {}",
-            },
-            "scripts-2": {
-                "a.js": "const add = (a, b) => a + b;",
-                "c.js": `"use strict";\nalert("danger!");`,
-            },
-            "scripts-3": {
-                "b.js": `(function ($) {\n    $('body').foo();\n}(jQuery))`,
-                "glob [syntax].js": `export function foo() {}`,
-            },
-        }
-    });
+    // Hooks for tests
+    const mockCwd = (os.tmpdir() + "/vinyl-fs-vpath/src.test/").replace(/\\/g, "/");
+    const mockCwdRelative = (path.relative(process.cwd(), mockCwd) + "/").replace(/\\/g, "/");
+    function pathAsRelative(naivePath: string) {
+        return mockCwdRelative + naivePath;
+    }
+    t.context.pathAsRelative = pathAsRelative;
+    function pathAsAbsolute(naivePath: string) {
+        return path.resolve(mockCwd + naivePath);
+    }
+    t.context.pathAsAbsolute = pathAsAbsolute;
+    function writeFile(naivePath: string, data: string) {
+        fs.writeFileSync(pathAsAbsolute(naivePath), data);
+    }
+
+    // Create files to be read
+    fs.mkdirSync(pathAsAbsolute("test-data/scripts-1"), { recursive: true });
+    writeFile("test-data/scripts-1/a.js", `window.a = "foo";`);
+    writeFile("test-data/scripts-1/b.js", "function bar() {}");
+    fs.mkdirSync(pathAsAbsolute("test-data/scripts-2"), { recursive: true });
+    writeFile("test-data/scripts-2/a.js", "const add = (a, b) => a + b;");
+    writeFile("test-data/scripts-2/c.js", `"use strict";\nalert("danger!");`);
+    fs.mkdirSync(pathAsAbsolute("test-data/scripts-3"), { recursive: true });
+    writeFile("test-data/scripts-3/b.js", `(function ($) {\n    $('body').foo();\n}(jQuery))`);
+    writeFile("test-data/scripts-3/glob [syntax].js", `export function foo() {}`);
 });
 
 test.after(t => {
-    mockFs.restore();
+    fs.rmSync(t.context.pathAsAbsolute(""), { recursive: true });
 });
 
 test("Throws if no files resolved", async t => {
     await t.throwsAsync(
         async () => await getStream.array<Vinyl>(src({
-            globs: "./test-data/scripts-0/**/*",
+            globs: t.context.pathAsRelative("test-data/scripts-0") + "/**/*",
             pathMappings: [],
             cwd: process.cwd(),
             logger: logAdapter(t.log),
@@ -47,7 +63,7 @@ test("Throws if no files resolved", async t => {
 
     await t.throwsAsync(
         async () => await getStream.array<Vinyl>(src({
-            globs: "./test-data/scripts-1/0.js",
+            globs: t.context.pathAsRelative("test-data/scripts-1/0.js"),
             pathMappings: [],
         })),
         {
@@ -60,7 +76,7 @@ test("Throws if no files resolved", async t => {
 test("Pushes expected files into stream", async t => {
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
-            globs: "./test-data/**/*.js",
+            globs: t.context.pathAsRelative("test-data") + "/**/*.js",
             pathMappings: [],
         })),
         "history"
@@ -68,11 +84,11 @@ test("Pushes expected files into stream", async t => {
 
     const expected = sortOn(
         [
-            new Vinyl({ path: resolvePath("./test-data/scripts-1/a.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-1/b.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-2/a.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-2/c.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-3/b.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-1/a.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-1/b.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-2/a.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-2/c.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-3/b.js") }),
         ],
         "history"
     );
@@ -88,7 +104,7 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
     // We are just pushing these custom options to Vinyl, so we aren't too concerned about their logic.
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
-            globs: "./test-data/**/*.js",
+            globs: t.context.pathAsRelative("test-data") + "/**/*.js",
             pathMappings: [],
             base: process.cwd(),
         })),
@@ -97,11 +113,11 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
 
     const expected = sortOn(
         [
-            new Vinyl({ path: resolvePath("./test-data/scripts-1/a.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-1/b.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-2/a.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-2/c.js") }),
-            new Vinyl({ path: resolvePath("./test-data/scripts-3/b.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-1/a.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-1/b.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-2/a.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-2/c.js") }),
+            new Vinyl({ path: t.context.pathAsAbsolute("test-data/scripts-3/b.js") }),
         ],
         "history"
     );
@@ -116,11 +132,11 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
 test("Pushes expected files into stream with vPaths and simple glob", async t => {
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
-            globs: "./test-data/**/*.js",
+            globs: t.context.pathAsRelative("test-data") + "/**/*.js",
             pathMappings: [
-                { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
-                { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
-                { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
+                { match: t.context.pathAsAbsolute("test-data/scripts-3/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
+                { match: t.context.pathAsAbsolute("test-data/scripts-1/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
+                { match: t.context.pathAsAbsolute("test-data/scripts-2/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
             ]
         })),
         "history"
@@ -129,16 +145,16 @@ test("Pushes expected files into stream with vPaths and simple glob", async t =>
     const expected = sortOn(
         [
             new Vinyl({
-                path: resolvePath("./test-data/scripts/b.js"),
-                history: [ resolvePath("./test-data/scripts-1/b.js") ],
+                path: t.context.pathAsAbsolute("test-data/scripts/b.js"),
+                history: [ t.context.pathAsAbsolute("test-data/scripts-1/b.js") ],
             }),
             new Vinyl({
-                path: resolvePath("./test-data/scripts/a.js"),
-                history: [ resolvePath("./test-data/scripts-2/a.js") ],
+                path: t.context.pathAsAbsolute("test-data/scripts/a.js"),
+                history: [ t.context.pathAsAbsolute("test-data/scripts-2/a.js") ],
             }),
             new Vinyl({
-                path: resolvePath("./test-data/scripts/c.js"),
-                history: [ resolvePath("./test-data/scripts-2/c.js") ],
+                path: t.context.pathAsAbsolute("test-data/scripts/c.js"),
+                history: [ t.context.pathAsAbsolute("test-data/scripts-2/c.js") ],
             }),
         ],
         "history"
@@ -154,11 +170,14 @@ test("Pushes expected files into stream with vPaths and simple glob", async t =>
 test("Pushes expected files into stream with vPaths and complex glob", async t => {
     const actual = sortOn(
         await getStream.array<Vinyl>(src({
-            globs: [ "./test-data/**/*.js", "!./test-data/scripts-2/**/*.js" ],
+            globs: [
+                t.context.pathAsRelative("test-data") + "/**/*.js",
+                "!" + t.context.pathAsRelative("test-data/scripts-2") + "/**/*.js",
+            ],
             pathMappings: [
-                { match: "./test-data/scripts-3/", replace: "./test-data/scripts/" },
-                { match: "./test-data/scripts-1/", replace: "./test-data/scripts/" },
-                { match: "./test-data/scripts-2/", replace: "./test-data/scripts/" },
+                { match: t.context.pathAsAbsolute("test-data/scripts-3/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
+                { match: t.context.pathAsAbsolute("test-data/scripts-1/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
+                { match: t.context.pathAsAbsolute("test-data/scripts-2/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
             ]
         })),
         "history"
@@ -167,12 +186,12 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
     const expected = sortOn(
         [
             new Vinyl({
-                path: resolvePath("./test-data/scripts/b.js"),
-                history: [ resolvePath("./test-data/scripts-1/b.js") ],
+                path: t.context.pathAsAbsolute("test-data/scripts/b.js"),
+                history: [ t.context.pathAsAbsolute("test-data/scripts-1/b.js") ],
             }),
             new Vinyl({
-                path: resolvePath("./test-data/scripts/a.js"),
-                history: [ resolvePath("./test-data/scripts-1/a.js") ],
+                path: t.context.pathAsAbsolute("test-data/scripts/a.js"),
+                history: [ t.context.pathAsAbsolute("test-data/scripts-1/a.js") ],
             }),
         ],
         "history"
@@ -185,21 +204,17 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
     }
 });
 
-test("Outputs equivilant to vinyl-fs package", async t => {
+test("Outputs equivalent to vinyl-fs package", async t => {
     const actual = await getStream.array<Vinyl>(src({
-        globs: [ "./test-data/**/*.js" ],
+        globs: [ t.context.pathAsRelative("test-data") + "/**/*.js" ],
         pathMappings: [],
         logger: logAdapter(t.log),
     }));
 
-    t.log("before");
-
     const expected = await getStream.array<Vinyl>(vinylFs.src(
-        "./test-data/**/*.js",
+        t.context.pathAsRelative("test-data") + "/**/*.js",
         { base: process.cwd() }
     ));
-
-    t.log("after");
 
     // atime varies so we override to something more stable
     const atime = new Date();
