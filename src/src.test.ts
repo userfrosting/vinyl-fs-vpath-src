@@ -45,7 +45,7 @@ test.before(t => {
 });
 
 test.after(t => {
-    del.sync(t.context.pathAsAbsolute("") + "/**");
+    del.sync(t.context.pathAsAbsolute("") + "/**", { force: true });
 });
 
 test("Throws if no files resolved", async t => {

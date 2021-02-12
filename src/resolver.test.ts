@@ -41,7 +41,7 @@ test.before(t => {
 });
 
 test.after(t => {
-    del.sync(t.context.pathAsAbsolute("") + "/**");
+    del.sync(t.context.pathAsAbsolute("") + "/**", { force: true });
 });
 
 test("Returns all glob matched paths when no vpaths provided", t => {
