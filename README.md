@@ -14,8 +14,12 @@ npm i -D @userfrosting/vinyl-fs-vpath
 
 ## Usage
 
+> **IMPORTANT**<br/>
+> This is an ES module package targeting NodeJS `^12.17.0 || >=13.2.0`, refer to the [NodeJS ESM docs](https://nodejs.org/api/esm.html) regarding how to correctly import.
+> ESM loaders like `@babel/loader` or `esm` likely won't work as expected.
+
 ```js
-// gulpfile.esm.js
+// gulpfile.mjs
 import { src } from "@userfrosting/vinyl-fs-vpath";
 import { dest } from "gulp";
 import terser from "gulp-terser";
@@ -59,9 +63,9 @@ $ gulp bundle
 
 ## Why no `dest`?
 
-This package was originally created to address a pain point that adding support for `dest` would inherit, backpressure and memory pressure. Backpressure occurs in a stream when a single part of the pipeline collects chunks but emits little to nothing for later pipeline parts, thus reducing effiency overall. The override logic with virtual paths needs to hold onto most of the files to decide what files should be discarded, which means memory requirements will steadily increase proportionally with the number of files in the pipeline. Some optimisations can be made, however they have little impact in most cases.
+Applying virtual path logic requires knowledge, without it there is no way to perform the operation in a deterministic manner. `src` does this by finding all the files and then performing the virtual path logic against the complete set, such an approach however does map translate to `dest` well. Memory pressure is a significant concern (that has no easy workaround) and perhaps more importantly it hurts the efficiency of the overall pipeline by introducing backpressure (tasks later in the pipeline remain idle, reducing opportunity for asynchronous operations to be run).
 
-Much of the source does already exist in `@userfrosting/gulp-bundle-assets@^3`, so its introduction wouldn't be tremendously difficult. If it is something you might find useful just ask.
+I can see a need for mid-stream or end-of-stream virtual path operations in more specialised scenarios, so if its needed file an issue. Much of the logic already exists in `@userfrosting/gulp-bundle-assets@^3`, so it would not be a significant undertaking. The scope would most likely be limited to mid-stream operations to avoid duplicating the functionality of `gulp.dest` which can just be chained immediately after.
 
 ## API
 
