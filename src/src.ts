@@ -86,7 +86,7 @@ class VinylFsVPathSrc extends Readable {
     /**
      * Internal only. Instructs that a new file needs to be pushed out.
      */
-    async _read() {
+    _read() {
         while (this.files.length > 0) {
             const { actual, virtual } = this.files.pop();
 
@@ -100,10 +100,9 @@ class VinylFsVPathSrc extends Readable {
                 this.logger.trace("Pushing file", { actual, virtual });
                 this.push(file);
                 return;
-            /* c8 ignore next 4 */
             } catch (error) {
                 // This can happen when there are file changes during processing, difficult to test
-                throw new PluginError("userfrosting/vinyl-fs-vpath", error);
+                this.emit("error", new PluginError("@userfrosting/vinyl-fs-vpath", error));
             }
         }
 

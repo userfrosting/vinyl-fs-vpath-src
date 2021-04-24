@@ -1,29 +1,27 @@
-import pTest, { TestInterface } from "ava";
-import path from "path";
-import os from "os";
-import fs from "fs";
+import test, { ExecutionContext } from "ava";
+import path from "node:path";
+import os from "node:os";
+import fs from "node:fs";
 import del from "del";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import resolver from "./resolver.js";
 
 // TODO Remove dependence on file system, this is currently an integration test retrofitted as a unit test
-const test = pTest as TestInterface<{
-    pathAsRelative: (naivePath: string) => string,
-    pathAsAbsolute: (naivePath: string) => string,
-}>;
+const testFileId = Buffer.from(import.meta.url).toString('base64');
 
-test.before(t => {
-    // Hooks for tests
-    const mockCwd = (os.tmpdir() + "/vinyl-fs-vpath/src.test/").replace(/\\/g, "/");
+function prep(t: ExecutionContext) {
+    const testTitleId = Buffer.from(t.title, 'utf-8').toString('base64');
+    const mockCwd = `${os.tmpdir()}/vinyl-fs-vpath/${testFileId}/${testTitleId}/`.replace(/\\/g, "/");
     const mockCwdRelative = (path.relative(process.cwd(), mockCwd) + "/").replace(/\\/g, "/");
+
     function pathAsRelative(naivePath: string) {
         return mockCwdRelative + naivePath;
     }
-    t.context.pathAsRelative = pathAsRelative;
+
     function pathAsAbsolute(naivePath: string) {
         return path.resolve(mockCwd + naivePath);
     }
-    t.context.pathAsAbsolute = pathAsAbsolute;
+
     function writeFile(naivePath: string, data: string) {
         fs.writeFileSync(pathAsAbsolute(naivePath), data);
     }
@@ -38,23 +36,29 @@ test.before(t => {
     fs.mkdirSync(pathAsAbsolute("test-data/scripts-3"), { recursive: true });
     writeFile("test-data/scripts-3/b.js", `(function ($) {\n    $('body').foo();\n}(jQuery))`);
     writeFile("test-data/scripts-3/glob [syntax].js", `export function foo() {}`);
-});
 
-test.after(t => {
-    del.sync(t.context.pathAsAbsolute("") + "/**", { force: true });
-});
+    return {
+        pathAsAbsolute,
+        pathAsRelative,
+        clean() {
+            del.sync(pathAsAbsolute("") + "/**", { force: true });
+        }
+    }
+}
 
 test("Returns all glob matched paths when no vpaths provided", t => {
-    const file1 = t.context.pathAsAbsolute("test-data/scripts-1/a.js");
-    const file2 = t.context.pathAsAbsolute("test-data/scripts-1/b.js");
-    const file3 = t.context.pathAsAbsolute("test-data/scripts-2/a.js");
-    const file4 = t.context.pathAsAbsolute("test-data/scripts-2/c.js");
-    const file5 = t.context.pathAsAbsolute("test-data/scripts-3/b.js");
-    const file6 = t.context.pathAsAbsolute("test-data/scripts-3/glob [syntax].js");
+    const { pathAsRelative, pathAsAbsolute, clean } = prep(t);
+
+    const file1 = pathAsAbsolute("test-data/scripts-1/a.js");
+    const file2 = pathAsAbsolute("test-data/scripts-1/b.js");
+    const file3 = pathAsAbsolute("test-data/scripts-2/a.js");
+    const file4 = pathAsAbsolute("test-data/scripts-2/c.js");
+    const file5 = pathAsAbsolute("test-data/scripts-3/b.js");
+    const file6 = pathAsAbsolute("test-data/scripts-3/glob [syntax].js");
 
     t.deepEqual(
         resolver(
-            [ t.context.pathAsRelative("test-data") + "/**/*.js" ],
+            [ pathAsRelative("test-data") + "/**/*.js" ],
             { virtPathMaps: [], cwd: process.cwd(), logger: logAdapter(t.log), }
         ),
         [
@@ -66,16 +70,20 @@ test("Returns all glob matched paths when no vpaths provided", t => {
             { virtual: file6, actual: file6 },
         ]
     );
+
+    clean();
 });
 
 test.only("Overrides when vpaths intersect", t => {
+    const { pathAsRelative, pathAsAbsolute, clean } = prep(t);
+
     const actual = resolver(
-        [ t.context.pathAsRelative("test-data") + "/**/*.js" ],
+        [ pathAsRelative("test-data") + "/**/*.js" ],
         {
             virtPathMaps: [
-                { match: t.context.pathAsAbsolute("test-data/scripts-3/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
-                { match: t.context.pathAsAbsolute("test-data/scripts-1/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
-                { match: t.context.pathAsAbsolute("test-data/scripts-2/"), replace: t.context.pathAsAbsolute("test-data/scripts/") },
+                { match: pathAsAbsolute("test-data/scripts-3/"), replace: pathAsAbsolute("test-data/scripts/") },
+                { match: pathAsAbsolute("test-data/scripts-1/"), replace: pathAsAbsolute("test-data/scripts/") },
+                { match: pathAsAbsolute("test-data/scripts-2/"), replace: pathAsAbsolute("test-data/scripts/") },
             ],
             cwd: process.cwd(),
             logger: logAdapter(t.log),
@@ -83,11 +91,13 @@ test.only("Overrides when vpaths intersect", t => {
     );
 
     const expected = [
-        { virtual: t.context.pathAsAbsolute("test-data/scripts/a.js"), actual: t.context.pathAsAbsolute("test-data/scripts-2/a.js") },
-        { virtual: t.context.pathAsAbsolute("test-data/scripts/b.js"), actual: t.context.pathAsAbsolute("test-data/scripts-1/b.js") },
-        { virtual: t.context.pathAsAbsolute("test-data/scripts/c.js"), actual: t.context.pathAsAbsolute("test-data/scripts-2/c.js") },
-        { virtual: t.context.pathAsAbsolute("test-data/scripts/glob [syntax].js"), actual: t.context.pathAsAbsolute("test-data/scripts-3/glob [syntax].js") },
+        { virtual: pathAsAbsolute("test-data/scripts/a.js"), actual: pathAsAbsolute("test-data/scripts-2/a.js") },
+        { virtual: pathAsAbsolute("test-data/scripts/b.js"), actual: pathAsAbsolute("test-data/scripts-1/b.js") },
+        { virtual: pathAsAbsolute("test-data/scripts/c.js"), actual: pathAsAbsolute("test-data/scripts-2/c.js") },
+        { virtual: pathAsAbsolute("test-data/scripts/glob [syntax].js"), actual: pathAsAbsolute("test-data/scripts-3/glob [syntax].js") },
     ];
 
     t.deepEqual(actual, expected);
+
+    clean();
 });
