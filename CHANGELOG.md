@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- File access errors not being pushed into stream, resulting in unclear failure reasons. [#285](https://github.com/userfrosting/vinyl-fs-vpath/issues/284)
+
 ## [3.0.0] - 2021-02-13
 
 ### Changed
