@@ -1,7 +1,7 @@
 import test, { ExecutionContext } from "ava";
-import path from "node:path";
-import os from "node:os";
-import fs from "node:fs";
+import path from "path";
+import os from "os";
+import fs from "fs";
 import del from "del";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import resolver from "./resolver.js";
