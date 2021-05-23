@@ -63,9 +63,9 @@ $ gulp bundle
 
 ## Why no `dest`?
 
-Applying virtual path logic requires knowledge, without it there is no way to perform the operation in a deterministic manner. `src` does this by finding all the files and then performing the virtual path logic against the complete set, such an approach however does map translate to `dest` well. Memory pressure is a significant concern (that has no easy workaround) and perhaps more importantly it hurts the efficiency of the overall pipeline by introducing backpressure (tasks later in the pipeline remain idle, reducing opportunity for asynchronous operations to be run).
+Applying virtual path logic requires knowledge, without it there is no way to perform the operation in a deterministic manner. `src` does this by finding all the files and then performing the virtual path logic against the complete set, such an approach however does map translate to `dest` well. Memory pressure is a significant concern (that has no easy workaround) and perhaps more importantly it hurts the efficiency of the overall pipeline by introducing back-pressure (tasks later in the pipeline remain idle, reducing opportunity for asynchronous operations to be run).
 
-I can see a need for mid-stream or end-of-stream virtual path operations in more specialised scenarios, so if its needed file an issue. Much of the logic already exists in `@userfrosting/gulp-bundle-assets@^3`, so it would not be a significant undertaking. The scope would most likely be limited to mid-stream operations to avoid duplicating the functionality of `gulp.dest` which can just be chained immediately after.
+I can see a need for mid-stream or end-of-stream virtual path operations in more specialized scenarios, so if its needed file an issue. Much of the logic already exists in `@userfrosting/gulp-bundle-assets@^3`, so it would not be a significant undertaking. The scope would most likely be limited to mid-stream operations to avoid duplicating the functionality of `gulp.dest` which can just be chained immediately after.
 
 ## API
 

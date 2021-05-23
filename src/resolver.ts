@@ -90,7 +90,7 @@ export default function (globs: string[], options: IResolverOptions): IMappedPat
         const existingFile = candidatePaths.get(virtual);
         if (existingFile) {
             if (existingFile.preference < preference) {
-                log.trace("Superseeding existing file path", { virtual, actual, preference });
+                log.trace("Super-seeding existing file path", { virtual, actual, preference });
                 candidatePaths.set(virtual, { actual, preference });
             }
             else {
@@ -103,7 +103,7 @@ export default function (globs: string[], options: IResolverOptions): IMappedPat
         }
     }
 
-    log.trace("Path filtering complete, cleaning up results to return", { canidatePaths: candidatePaths.size });
+    log.trace("Path filtering complete, cleaning up results to return", { candidatePaths: candidatePaths.size });
 
     // Clean outputs
 

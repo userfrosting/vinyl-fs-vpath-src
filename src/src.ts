@@ -15,7 +15,7 @@ export interface IConfig {
 
     /**
      * Virtual path mappings. Collision resolution uses the last mapping to select the file.
-     * Internally mapping occurs on absolute path strings, conversion and normalisation is
+     * Internally mapping occurs on absolute path strings, conversion and normalization is
      * performed automatically. Resolution is *not* recursive.
      */
     pathMappings: IPathMapper[];
@@ -27,7 +27,7 @@ export interface IConfig {
     cwd?: string;
 
     /**
-     * Optional logger. Use this to debug issues and trace behaviours.
+     * Optional logger. Use this to debug issues and trace behaviors.
      * Adheres to interface defined in ts-log package.
      */
     logger?: Logger;
