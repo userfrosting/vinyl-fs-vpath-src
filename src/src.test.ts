@@ -4,10 +4,10 @@ import getStream from "get-stream";
 import vinylFs from "vinyl-fs";
 import sortOn from "sort-on";
 import Vinyl from "vinyl";
-import path from "node:path";
+import path from "path";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
-import os from "node:os";
-import fs from "node:fs";
+import os from "os";
+import fs from "fs";
 import del from "del";
 import PluginError from "plugin-error";
 
