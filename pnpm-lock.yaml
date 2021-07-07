@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@microsoft/api-documenter': ^7.12.7
   '@microsoft/api-extractor': ^7.13.1
-  '@types/node': ^15.0.1
+  '@types/node': ^16.0.0
   '@types/vinyl': ^2.0.4
   '@types/vinyl-file': ^3.0.0
   '@types/vinyl-fs': ^2.4.11
@@ -32,7 +32,7 @@ dependencies:
 devDependencies:
   '@microsoft/api-documenter': 7.13.9
   '@microsoft/api-extractor': 7.15.2
-  '@types/node': 15.6.0
+  '@types/node': 16.0.0
   '@types/vinyl': 2.0.4
   '@types/vinyl-file': 3.0.0
   '@types/vinyl-fs': 2.4.11
@@ -412,6 +412,10 @@ packages:
 
   /@types/node/15.6.0:
     resolution: {integrity: sha512-gCYSfQpy+LYhOFTKAeE8BkyGqaxmlFxe+n4DKM6DR0wzw/HISUE/hAmkC/KT8Sw5PCJblqg062b3z9gucv3k0A==}
+    dev: true
+
+  /@types/node/16.0.0:
+    resolution: {integrity: sha512-TmCW5HoZ2o2/z2EYi109jLqIaPIi9y/lc2LmDCWzuCi35bcaQ+OtUh6nwBiFK7SOu25FAU5+YKdqFZUwtqGSdg==}
     dev: true
 
   /@types/normalize-package-data/2.4.0:
