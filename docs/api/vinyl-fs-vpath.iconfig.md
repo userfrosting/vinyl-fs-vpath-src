@@ -18,6 +18,6 @@ export interface IConfig
 |  [base?](./vinyl-fs-vpath.iconfig.base.md) | string | <i>(Optional)</i> Specifies the folder relative to the cwd This is used to determine the file names when saving in .dest() Default: cwd |
 |  [cwd?](./vinyl-fs-vpath.iconfig.cwd.md) | string | <i>(Optional)</i> Current working directory. Default: process.cwd() |
 |  [globs](./vinyl-fs-vpath.iconfig.globs.md) | string \| string\[\] | Input file matchers. |
-|  [logger?](./vinyl-fs-vpath.iconfig.logger.md) | Logger | <i>(Optional)</i> Optional logger. Use this to debug issues and trace behaviours. Adheres to interface defined in ts-log package. |
-|  [pathMappings](./vinyl-fs-vpath.iconfig.pathmappings.md) | [IPathMapper](./vinyl-fs-vpath.ipathmapper.md)<!-- -->\[\] | Virtual path mappings. Collision resolution uses the last mapping to select the file. Internally mapping occurs on absolute path strings, conversion and normalisation is performed automatically. Resolution is \*not\* recursive. |
+|  [logger?](./vinyl-fs-vpath.iconfig.logger.md) | Logger | <i>(Optional)</i> Optional logger. Use this to debug issues and trace behaviors. Adheres to interface defined in ts-log package. |
+|  [pathMappings](./vinyl-fs-vpath.iconfig.pathmappings.md) | [IPathMapper](./vinyl-fs-vpath.ipathmapper.md)<!-- -->\[\] | Virtual path mappings. Collision resolution uses the last mapping to select the file. Internally mapping occurs on absolute path strings, conversion and normalization is performed automatically. Resolution is \*not\* recursive. |
 
