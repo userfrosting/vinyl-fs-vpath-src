@@ -44,7 +44,7 @@
         "url": "https://github.com/userfrosting/vinyl-fs-vpath/issues"
     },
     "dependencies": {
-        "globby": "^11.0.2",
+        "globby": "^12.0.1",
         "plugin-error": "^1.0.1",
         "ts-log": "^2.2.3",
         "vinyl-file": "^3.0.0"
