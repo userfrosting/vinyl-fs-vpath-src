@@ -1,9 +1,16 @@
 name: Continuous Integration
 on:
-  # Every push
+  # Main branch updated
   push:
+    branches:
+      - main
   # Pull request
   pull_request:
+    types:
+      # Newly opened
+      - opened
+      # Updated (excludes change of base branch)
+      - synchronize
 
 jobs:
   test:
@@ -14,12 +21,12 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.2.0
+    - uses: actions/setup-node@v2.4.0
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci --ignore-scripts
     - run: ./node_modules/.bin/c8 --reporter=lcovonly npm test
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v2.0.2
       with:
         token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
 
@@ -27,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.2.0
+    - uses: actions/setup-node@v2.4.0
       with:
         node-version: ^14.0.0
     - uses: actions/cache@v2
@@ -49,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.2.0
+    - uses: actions/setup-node@v2.4.0
       with:
         node-version: ^14.0.0
     - run: npm ci
@@ -68,12 +75,12 @@ jobs:
           requirementsChanged:
             - 'package.json'
     - name: Merge lockfile changes
-      uses: fastify/github-action-merge-dependabot@v2.2.0
+      uses: fastify/github-action-merge-dependabot@v2.4.0
       if: steps.filter.outputs.requirementsChanged == 'false'
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Approve requirement changes
-      uses: fastify/github-action-merge-dependabot@v2.2.0
+      uses: fastify/github-action-merge-dependabot@v2.4.0
       if: steps.filter.outputs.requirementsChanged == 'true'
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
