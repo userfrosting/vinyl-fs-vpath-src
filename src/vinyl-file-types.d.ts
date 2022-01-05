@@ -1,3 +1,4 @@
+// https://github.com/sindresorhus/vinyl-file/issues/9
 declare module "vinyl-file" {
     import File from "vinyl";
 
