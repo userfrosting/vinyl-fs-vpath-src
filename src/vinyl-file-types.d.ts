@@ -9,7 +9,7 @@ declare module "vinyl-file" {
         /** Specifies the folder relative to the cwd */
         base?: string | undefined;
 
-        /** Setting this to false will retuurn file.contents as a stream */
+        /** Setting this to false will return file.contents as a stream */
         buffer?: boolean | undefined;
 
         /** Setting this to false will return file.contents as null and not read the file at all */
