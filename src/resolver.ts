@@ -1,5 +1,5 @@
 import { Logger } from "ts-log";
-import globby from "globby";
+import { globbySync } from "globby";
 import { resolve as resolvePath } from "path";
 
 /**
@@ -72,7 +72,7 @@ export default function (globs: string[], options: IResolverOptions): IMappedPat
 
     log.trace("Looking for files", { globs });
 
-    const paths = globby.sync(globs, { cwd, onlyFiles: true, unique: true })
+    const paths = globbySync(globs, { cwd, onlyFiles: true, unique: true })
         .map(path => resolvePath(cwd, path));
 
     log.trace(`Found ${paths.length} files, filtering with provided virtual paths`);
