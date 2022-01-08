@@ -1,4 +1,4 @@
-import { Logger } from "ts-log";
+import { type Logger } from "ts-log";
 import { globbySync } from "globby";
 import { resolve as resolvePath } from "path";
 
