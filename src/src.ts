@@ -1,8 +1,9 @@
 import { Readable } from "stream";
-import resolver, { IPathMapper, IMappedPath } from "./resolver.js";
-import { dummyLogger, Logger } from "ts-log";
-import { vinylFileSync, VinylFileOptions } from "vinyl-file";
+import resolver, { type IPathMapper, type IMappedPath } from "./resolver.js";
+import { dummyLogger, type Logger } from "ts-log";
+import { vinylFileSync, type Options as VinylFileOptions } from "vinyl-file";
 import PluginError from "plugin-error";
+import type File from "vinyl";
 
 /**
  * @public
@@ -91,7 +92,7 @@ class VinylFsVPathSrc extends Readable {
             const { actual, virtual } = this.files.pop();
 
             try {
-                const file = vinylFileSync(actual, this.vinylFsSrcOptions);
+                const file = vinylFileSync(actual, this.vinylFsSrcOptions) as File;
 
                 if (actual !== virtual) {
                     file.path = virtual;
