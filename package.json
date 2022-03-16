@@ -1,7 +1,7 @@
 {
     "$schema": "http://json.schemastore.org/package.json",
     "name": "@userfrosting/vinyl-fs-vpath",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "description": "Vinyl source for file system with support for virtual paths.",
     "funding": {
         "url": "https://opencollective.com/userfrosting"
