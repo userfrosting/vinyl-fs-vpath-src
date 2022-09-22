@@ -45,7 +45,7 @@
     },
     "dependencies": {
         "globby": "^13.1.1",
-        "plugin-error": "^1.0.1",
+        "plugin-error": "^2.0.0",
         "ts-log": "^2.2.3",
         "vinyl-file": "^4.1.0"
     },
