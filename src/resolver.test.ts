@@ -2,7 +2,7 @@ import test, { ExecutionContext } from "ava";
 import path from "path";
 import os from "os";
 import fs from "fs";
-import del from "del";
+import * as del from "del";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import resolver from "./resolver.js";
 
@@ -41,7 +41,7 @@ function prep(t: ExecutionContext) {
         pathAsAbsolute,
         pathAsRelative,
         clean() {
-            del.sync(pathAsAbsolute("") + "/**", { force: true });
+            del.deleteSync(pathAsAbsolute("") + "/**", { force: true });
         }
     }
 }
