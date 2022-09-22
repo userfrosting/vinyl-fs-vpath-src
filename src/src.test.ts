@@ -8,7 +8,7 @@ import path from "path";
 import { logAdapter } from "@userfrosting/ts-log-adapter-ava";
 import os from "os";
 import fs from "fs";
-import del from "del";
+import * as del from "del";
 import PluginError from "plugin-error";
 
 // TODO Remove dependence on file system, this is currently an integration test retrofitted as a unit test
@@ -46,7 +46,7 @@ function prep(t: ExecutionContext) {
         pathAsAbsolute,
         pathAsRelative,
         clean() {
-            del.sync(pathAsAbsolute("") + "/**", { force: true });
+            del.deleteSync(pathAsAbsolute("") + "/**", { force: true });
         }
     }
 }
@@ -269,7 +269,7 @@ test("Reports file access errors", async t => {
     });
 
     // Delete them
-    await del(pathAsRelative("test-data/scripts-1/a.js"), { force: true });
+    await del.deleteAsync(pathAsRelative("test-data/scripts-1/a.js"), { force: true });
 
     // And watch the resulting fire when we try to read
     await t.throwsAsync(
