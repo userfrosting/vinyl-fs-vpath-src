@@ -16,7 +16,8 @@
         "postversion",
         "preversion",
         "virt",
-        "vpaths"
+        "vpaths",
+        "concat"
     ],
     "ignorePaths": [
         "cspell.json",
