@@ -228,21 +228,25 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
     clean();
 });
 
+// NOTE `vinyl-fs` will only resolve files under `cwd`, unlike our implementation.
+//      This test differs from others as a result.
 test("Outputs equivalent to vinyl-fs package", async t => {
-    const { pathAsRelative, clean } = prep(t);
+    const { pathAsAbsolute, clean } = prep(t);
 
     const actual = await src({
-        globs: [ pathAsRelative("test-data") + "/**/*.js" ],
+        globs: [ "test-data/**/*.js" ],
         pathMappings: [],
         logger: logAdapter(t.log),
+        base: pathAsAbsolute(""),
+        cwd: pathAsAbsolute(""),
     }).toArray();
 
     // NOTE 'as' casting required due to NodeJS.ReadWriteStream being incompatible with import('stream').Stream
     // In practice they are usually identical.
     const helperStream = new stream.PassThrough({ objectMode: true });
     vinylFs.src(
-        pathAsRelative("test-data") + "/**/*.js",
-        { base: process.cwd() }
+        "test-data/**/*.js",
+        { base: pathAsAbsolute(""), cwd: pathAsAbsolute("") }
     ).pipe(helperStream);
     const expected = await helperStream.toArray();
 

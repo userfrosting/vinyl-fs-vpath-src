@@ -65,7 +65,7 @@
         "sort-on": "^5.1.0",
         "typescript": "^5.4.2",
         "vinyl": "^3.0.0",
-        "vinyl-fs": "^3.0.3"
+        "vinyl-fs": "^4.0.0"
     },
     "engines": {
         "node": ">=18.0.0"
