@@ -277,7 +277,7 @@ test("Reports file access errors", async t => {
     // And watch the resulting fire when we try to read
     await t.throwsAsync(
         () => getStream.array(readable),
-        { instanceOf: PluginError },
+        { instanceOf: PluginError, any: true },
     );
 
     clean();
