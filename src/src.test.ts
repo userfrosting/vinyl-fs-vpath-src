@@ -1,6 +1,5 @@
 import test, { ExecutionContext } from "ava";
 import { src } from "./src.js";
-import getStream from "get-stream";
 import vinylFs from "vinyl-fs";
 import sortOn from "sort-on";
 import Vinyl from "vinyl";
@@ -56,12 +55,12 @@ test("Throws if no files resolved", async t => {
     const { pathAsRelative, clean } = prep(t);
 
     await t.throwsAsync(
-        async () => await getStream.array<Vinyl>(src({
+        async () => await src({
             globs: pathAsRelative("test-data/scripts-0") + "/**/*",
             pathMappings: [],
             cwd: process.cwd(),
             logger: logAdapter(t.log),
-        })),
+        }).toArray(),
         {
             instanceOf: Error,
             message: "No files found"
@@ -69,10 +68,10 @@ test("Throws if no files resolved", async t => {
     );
 
     await t.throwsAsync(
-        async () => await getStream.array<Vinyl>(src({
+        async () => await src({
             globs: pathAsRelative("test-data/scripts-1/0.js"),
             pathMappings: [],
-        })),
+        }).toArray(),
         {
             instanceOf: Error,
             message: "No files found"
@@ -86,10 +85,10 @@ test("Pushes expected files into stream", async t => {
     const { pathAsRelative, pathAsAbsolute, clean } = prep(t);
 
     const actual = sortOn(
-        await getStream.array<Vinyl>(src({
+        await src({
             globs: pathAsRelative("test-data") + "/**/*.js",
             pathMappings: [],
-        })),
+        }).toArray(),
         "history"
     );
 
@@ -118,11 +117,11 @@ test("Pushes expected files into stream when custom options passed to Vinyl", as
 
     // We are just pushing these custom options to Vinyl, so we aren't too concerned about their logic.
     const actual = sortOn(
-        await getStream.array<Vinyl>(src({
+        await src({
             globs: pathAsRelative("test-data") + "/**/*.js",
             pathMappings: [],
             base: process.cwd(),
-        })),
+        }).toArray(),
         "history"
     );
 
@@ -150,14 +149,14 @@ test("Pushes expected files into stream with vPaths and simple glob", async t =>
     const { pathAsRelative, pathAsAbsolute, clean } = prep(t);
 
     const actual = sortOn(
-        await getStream.array<Vinyl>(src({
+        await src({
             globs: pathAsRelative("test-data") + "/**/*.js",
             pathMappings: [
                 { match: pathAsAbsolute("test-data/scripts-3/"), replace: pathAsAbsolute("test-data/scripts/") },
                 { match: pathAsAbsolute("test-data/scripts-1/"), replace: pathAsAbsolute("test-data/scripts/") },
                 { match: pathAsAbsolute("test-data/scripts-2/"), replace: pathAsAbsolute("test-data/scripts/") },
             ]
-        })),
+        }).toArray(),
         "history"
     );
 
@@ -192,7 +191,7 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
     const { pathAsRelative, pathAsAbsolute, clean } = prep(t);
 
     const actual = sortOn(
-        await getStream.array<Vinyl>(src({
+        await src({
             globs: [
                 pathAsRelative("test-data") + "/**/*.js",
                 "!" + pathAsRelative("test-data/scripts-2") + "/**/*.js",
@@ -202,7 +201,7 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
                 { match: pathAsAbsolute("test-data/scripts-1/"), replace: pathAsAbsolute("test-data/scripts/") },
                 { match: pathAsAbsolute("test-data/scripts-2/"), replace: pathAsAbsolute("test-data/scripts/") },
             ]
-        })),
+        }).toArray(),
         "history"
     );
 
@@ -232,18 +231,20 @@ test("Pushes expected files into stream with vPaths and complex glob", async t =
 test("Outputs equivalent to vinyl-fs package", async t => {
     const { pathAsRelative, clean } = prep(t);
 
-    const actual = await getStream.array<Vinyl>(src({
+    const actual = await src({
         globs: [ pathAsRelative("test-data") + "/**/*.js" ],
         pathMappings: [],
         logger: logAdapter(t.log),
-    }));
+    }).toArray();
 
     // NOTE 'as' casting required due to NodeJS.ReadWriteStream being incompatible with import('stream').Stream
     // In practice they are usually identical.
-    const expected = await getStream.array<Vinyl>(vinylFs.src(
+    const helperStream = new stream.PassThrough({ objectMode: true });
+    vinylFs.src(
         pathAsRelative("test-data") + "/**/*.js",
         { base: process.cwd() }
-    ) as unknown as stream.Readable);
+    ).pipe(helperStream);
+    const expected = await helperStream.toArray();
 
     // atime varies so we override to something more stable
     const atime = new Date();
@@ -276,7 +277,7 @@ test("Reports file access errors", async t => {
 
     // And watch the resulting fire when we try to read
     await t.throwsAsync(
-        () => getStream.array(readable),
+        () => readable.toArray(),
         { instanceOf: PluginError, any: true },
     );
 
