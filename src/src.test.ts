@@ -10,6 +10,7 @@ import os from "os";
 import fs from "fs";
 import * as del from "del";
 import PluginError from "plugin-error";
+import stream from "stream";
 
 // TODO Remove dependence on file system, this is currently an integration test retrofitted as a unit test
 const testFileId = Buffer.from(import.meta.url).toString('base64');
@@ -237,10 +238,12 @@ test("Outputs equivalent to vinyl-fs package", async t => {
         logger: logAdapter(t.log),
     }));
 
+    // NOTE 'as' casting required due to NodeJS.ReadWriteStream being incompatible with import('stream').Stream
+    // In practice they are usually identical.
     const expected = await getStream.array<Vinyl>(vinylFs.src(
         pathAsRelative("test-data") + "/**/*.js",
         { base: process.cwd() }
-    ));
+    ) as unknown as stream.Readable);
 
     // atime varies so we override to something more stable
     const atime = new Date();
