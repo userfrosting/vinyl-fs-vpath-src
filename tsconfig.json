@@ -1,20 +1,14 @@
 {
     "compilerOptions": {
-        "module": "es2020",
-        "moduleResolution": "node",
-        "lib": [
-            "es2015"
-        ],
+        "module": "node16",
+        "moduleResolution": "node16",
+        "lib": ["es2022"],
         "allowSyntheticDefaultImports": true,
         "noEmitHelpers": true,
         "declaration": true,
-        "target": "es2017",
+        "target": "es2022",
         "outDir": "./dist/",
         "sourceMap": true,
-        // TODO Remove once self-referencing supported https://github.com/microsoft/TypeScript/issues/38675
-        "baseUrl": "./src/",
-        "paths": {
-            "@userfrosting/vinyl-fs-vpath": [ "./main" ]
-        }
+        "rootDir": "./src/"
     }
 }
