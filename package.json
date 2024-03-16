@@ -62,7 +62,7 @@
         "cspell": "^6.10.1",
         "del": "^7.0.0",
         "del-cli": "^5.0.0",
-        "get-stream": "^6.0.1",
+        "get-stream": "^9.0.0",
         "sort-on": "^5.1.0",
         "typescript": "^5.4.2",
         "vinyl": "^3.0.0",
